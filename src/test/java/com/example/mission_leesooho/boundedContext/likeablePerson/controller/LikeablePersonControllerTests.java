@@ -1,6 +1,12 @@
 package com.example.mission_leesooho.boundedContext.likeablePerson.controller;
 
 
+import com.example.mission_leesooho.boundedContext.instaMember.entity.InstaMember;
+import com.example.mission_leesooho.boundedContext.likeablePerson.entity.LikeablePerson;
+import com.example.mission_leesooho.boundedContext.likeablePerson.repository.LikeablePersonRepository;
+import com.example.mission_leesooho.boundedContext.likeablePerson.service.LikeablePersonService;
+import com.example.mission_leesooho.boundedContext.member.entity.Member;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +17,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -24,8 +32,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 @ActiveProfiles("test")
 public class LikeablePersonControllerTests {
-    @Autowired
-    private MockMvc mvc;
+
+    @Autowired private MockMvc mvc;
+
+    @Autowired private LikeablePersonService likeablePersonService;
+    @Autowired private LikeablePersonRepository likeablePersonRepository;
 
     @Test
     @DisplayName("등록 폼(인스타 인증을 안해서 폼 대신 메세지)")
@@ -147,6 +158,29 @@ public class LikeablePersonControllerTests {
                 .andExpect(content().string(containsString("""
                         <span class="toInstaMember_attractiveTypeDisplayName">성격</span>
                         """.stripIndent().trim())));
-        ;
+    }
+
+    // 아직 로직이 완벽하지 않아 해당 테스트는 동작하지 않습니다.
+    @Test
+    @DisplayName("호감인원 삭제")
+    void t006() throws Exception {
+        // get
+        Member member = Member.builder()
+                .username("이수호")
+                .password("123123")
+                .instaMember(InstaMember.builder().
+                        username("qweqwe").
+                        gender("남자").
+                        build())
+                .build();
+
+        likeablePersonService.like(member, "asdasd", 1);
+        List<LikeablePerson> likeablePeople = likeablePersonRepository.findByFromInstaMemberId(member.getInstaMember().getId());
+
+        // when
+        LikeablePerson deleteData = likeablePersonService.delete(member, 1L).getData();
+
+        // then
+        Assertions.assertThat(likeablePeople).contains(deleteData);
     }
 }
