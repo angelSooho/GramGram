@@ -56,7 +56,7 @@ public class MemberService {
     // 1:1 관계
     @Transactional
     public void updateInstaMember(Member member, InstaMember instaMember) {
-        member.setInstaMember(instaMember);
+        member.SelectInsta(instaMember);
         memberRepository.save(member); // 여기서 실제로 UPDATE 쿼리 발생
     }
 
