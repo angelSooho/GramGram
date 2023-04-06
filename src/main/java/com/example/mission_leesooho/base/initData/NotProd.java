@@ -35,9 +35,13 @@ public class NotProd {
             Member memberUserByGoogle1 = memberService.whenSocialLogin("GOOGLE", environment.getProperty("GOOGLE_CLIENT_ID1")).getData();
             Member memberUserByGoogle2 = memberService.whenSocialLogin("GOOGLE", environment.getProperty("GOOGLE_CLIENT_ID2")).getData();
 
+            instaMemberService.connect(memberUser1, "insta_user1", "M");
             instaMemberService.connect(memberUser2, "insta_user2", "M");
             instaMemberService.connect(memberUser3, "insta_user3", "W");
             instaMemberService.connect(memberUser4, "insta_user4", "M");
+
+            // 첫번째 호감인원 객체 생성
+            likeablePersonService.like(memberUser1, "insta_user3", 1);
 
             likeablePersonService.like(memberUser3, "insta_user4", 1);
             likeablePersonService.like(memberUser3, "insta_user100", 2);
