@@ -2,7 +2,7 @@ package com.example.mission_leesooho.boundedContext.likeablePerson.controller;
 
 import com.example.mission_leesooho.base.rq.Rq;
 import com.example.mission_leesooho.base.rsData.RsData;
-import com.example.mission_leesooho.boundedContext.likeablePerson.dto.response.likeResponse;
+import com.example.mission_leesooho.boundedContext.likeablePerson.dto.response.LikeablePersonResponse;
 import com.example.mission_leesooho.boundedContext.likeablePerson.entity.LikeablePerson;
 import com.example.mission_leesooho.boundedContext.likeablePerson.service.LikeablePersonService;
 import jakarta.validation.Valid;
@@ -42,7 +42,7 @@ public class LikeablePersonController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/add")
     public String add(@Valid AddForm addForm) {
-        RsData<likeResponse> createRsData = likeablePersonService.like(rq.getMember(), addForm.getUsername(), addForm.getAttractiveTypeCode());
+        RsData<LikeablePersonResponse> createRsData = likeablePersonService.like(rq.getMember(), addForm.getUsername(), addForm.getAttractiveTypeCode());
 
         if (createRsData.isFail()) {
             return rq.historyBack(createRsData);
@@ -55,7 +55,7 @@ public class LikeablePersonController {
     @GetMapping("delete/{id}")
     public String delete(@PathVariable("id") Long id) {
 
-        RsData<likeResponse> deleteRsData = likeablePersonService.delete(rq.getMember(), id);
+        RsData<LikeablePersonResponse> deleteRsData = likeablePersonService.delete(rq.getMember(), id);
 
         if (deleteRsData.isFail()) {
             return rq.historyBack(deleteRsData);
