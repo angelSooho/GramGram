@@ -3,6 +3,7 @@ package com.example.mission_leesooho.boundedContext.likeablePerson.controller;
 import com.example.mission_leesooho.base.rq.Rq;
 import com.example.mission_leesooho.base.rsData.RsData;
 import com.example.mission_leesooho.boundedContext.instaMember.entity.InstaMember;
+import com.example.mission_leesooho.boundedContext.likeablePerson.dto.LikeablePersonResponse;
 import com.example.mission_leesooho.boundedContext.likeablePerson.entity.LikeablePerson;
 import com.example.mission_leesooho.boundedContext.likeablePerson.service.LikeablePersonService;
 import jakarta.validation.Valid;
@@ -42,7 +43,7 @@ public class LikeablePersonController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/add")
     public String add(@Valid AddForm addForm) {
-        RsData<LikeablePerson> createRsData = likeablePersonService.like(rq.getMember(), addForm.getUsername(), addForm.getAttractiveTypeCode());
+        RsData<LikeablePersonResponse> createRsData = likeablePersonService.like(rq.getMember(), addForm.getUsername(), addForm.getAttractiveTypeCode());
 
         if (createRsData.isFail()) {
             return rq.historyBack(createRsData);
@@ -54,7 +55,7 @@ public class LikeablePersonController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("delete/{id}")
     public String delete(@PathVariable("id") Long id) {
-        RsData<LikeablePerson> deleteRsData = likeablePersonService.delete(rq.getMember(), id);
+        RsData<LikeablePersonResponse> deleteRsData = likeablePersonService.delete(rq.getMember(), id);
 
         if (deleteRsData.isFail()) {
             return rq.historyBack(deleteRsData);
@@ -66,11 +67,10 @@ public class LikeablePersonController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/list")
     public String showList(Model model) {
-        InstaMember instaMember = rq.getMember().getInstaMember();
 
         // 인스타인증을 했는지 체크
-        if (instaMember != null) {
-            List<LikeablePerson> likeablePeople = likeablePersonService.findByFromInstaMemberId(instaMember.getId());
+        if (rq.getMember().getInstaMember() != null) {
+            List<LikeablePerson> likeablePeople = likeablePersonService.findByFromInstaMemberId(rq.getMember().getInstaMember().getId());
             model.addAttribute("likeablePeople", likeablePeople);
         }
 
