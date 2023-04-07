@@ -21,6 +21,7 @@ public class InstaMember extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
+
     @Column(unique = true)
     private String username;
 
