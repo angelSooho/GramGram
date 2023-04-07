@@ -2,10 +2,7 @@ package com.example.mission_leesooho.boundedContext.likeablePerson.entity;
 
 import com.example.mission_leesooho.boundedContext.base.BaseTimeEntity;
 import com.example.mission_leesooho.boundedContext.instaMember.entity.InstaMember;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,11 +20,12 @@ public class LikeablePerson extends BaseTimeEntity {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private InstaMember fromInstaMember; // 호감을 표시한 사람(인스타 멤버)
 
     private String fromInstaMemberUsername; // 혹시 몰라서 기록
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     private InstaMember toInstaMember; // 호감을 받은 사람(인스타 멤버)
 
     private String toInstaMemberUsername; // 혹시 몰라서 기록

@@ -2,16 +2,18 @@ package com.example.mission_leesooho.boundedContext.likeablePerson.controller;
 
 import com.example.mission_leesooho.base.rq.Rq;
 import com.example.mission_leesooho.base.rsData.RsData;
-import com.example.mission_leesooho.boundedContext.instaMember.entity.InstaMember;
+import com.example.mission_leesooho.boundedContext.likeablePerson.dto.response.likeResponse;
 import com.example.mission_leesooho.boundedContext.likeablePerson.entity.LikeablePerson;
 import com.example.mission_leesooho.boundedContext.likeablePerson.service.LikeablePersonService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -24,6 +26,7 @@ public class LikeablePersonController {
     private final Rq rq;
     private final LikeablePersonService likeablePersonService;
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/add")
     public String showAdd() {
         return "usr/likeablePerson/add";
@@ -36,9 +39,10 @@ public class LikeablePersonController {
         private final int attractiveTypeCode;
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/add")
     public String add(@Valid AddForm addForm) {
-        RsData<LikeablePerson> createRsData = likeablePersonService.like(rq.getMember(), addForm.getUsername(), addForm.getAttractiveTypeCode());
+        RsData<likeResponse> createRsData = likeablePersonService.like(rq.getMember(), addForm.getUsername(), addForm.getAttractiveTypeCode());
 
         if (createRsData.isFail()) {
             return rq.historyBack(createRsData);
@@ -47,13 +51,26 @@ public class LikeablePersonController {
         return rq.redirectWithMsg("/likeablePerson/list", createRsData);
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("delete/{id}")
+    public String delete(@PathVariable("id") Long id) {
+
+        RsData<likeResponse> deleteRsData = likeablePersonService.delete(rq.getMember(), id);
+
+        if (deleteRsData.isFail()) {
+            return rq.historyBack(deleteRsData);
+        }
+
+        return rq.redirectWithMsg("/likeablePerson/list", deleteRsData);
+    }
+
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/list")
     public String showList(Model model) {
-        InstaMember instaMember = rq.getMember().getInstaMember();
 
         // 인스타인증을 했는지 체크
-        if (instaMember != null) {
-            List<LikeablePerson> likeablePeople = likeablePersonService.findByFromInstaMemberId(instaMember.getId());
+        if (rq.getMember().getInstaMember() != null) {
+            List<LikeablePerson> likeablePeople = likeablePersonService.findByFromInstaMemberId(rq.getMember().getInstaMember().getId());
             model.addAttribute("likeablePeople", likeablePeople);
         }
 

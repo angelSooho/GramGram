@@ -26,8 +26,10 @@ public class Member extends BaseTimeEntity {
     private Long id;
 
     private String providerTypeCode; // 일반회원인지, 카카오로 가입한 회원인지, 구글로 가입한 회원인지
+
     @Column(unique = true)
     private String username;
+
     private String password;
     @OneToOne // 1:1
 //    @Setter // memberService::updateInstaMember 함수 때문에
