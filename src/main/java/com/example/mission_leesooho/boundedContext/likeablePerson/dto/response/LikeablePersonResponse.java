@@ -1,4 +1,4 @@
-package com.example.mission_leesooho.boundedContext.likeablePerson.dto;
+package com.example.mission_leesooho.boundedContext.likeablePerson.dto.response;
 
 import com.example.mission_leesooho.boundedContext.instaMember.entity.InstaMember;
 import lombok.*;
@@ -7,11 +7,11 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class LikeablePersonResponse {
 
-    private InstaMember toInstaMember;
+    private String name;
     private int attractiveTypeCode;
 
-    public LikeablePersonResponse(InstaMember toInstaMember, int attractiveTypeCode) {
-        this.toInstaMember = toInstaMember;
+    public LikeablePersonResponse(String name, int attractiveTypeCode) {
+        this.name = name;
         this.attractiveTypeCode = attractiveTypeCode;
     }
 }

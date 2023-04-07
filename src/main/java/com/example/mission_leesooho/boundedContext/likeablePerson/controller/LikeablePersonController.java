@@ -2,8 +2,7 @@ package com.example.mission_leesooho.boundedContext.likeablePerson.controller;
 
 import com.example.mission_leesooho.base.rq.Rq;
 import com.example.mission_leesooho.base.rsData.RsData;
-import com.example.mission_leesooho.boundedContext.instaMember.entity.InstaMember;
-import com.example.mission_leesooho.boundedContext.likeablePerson.dto.LikeablePersonResponse;
+import com.example.mission_leesooho.boundedContext.likeablePerson.dto.response.LikeablePersonResponse;
 import com.example.mission_leesooho.boundedContext.likeablePerson.entity.LikeablePerson;
 import com.example.mission_leesooho.boundedContext.likeablePerson.service.LikeablePersonService;
 import jakarta.validation.Valid;
@@ -55,6 +54,7 @@ public class LikeablePersonController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("delete/{id}")
     public String delete(@PathVariable("id") Long id) {
+
         RsData<LikeablePersonResponse> deleteRsData = likeablePersonService.delete(rq.getMember(), id);
 
         if (deleteRsData.isFail()) {

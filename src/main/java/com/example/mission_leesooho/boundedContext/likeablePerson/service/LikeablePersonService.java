@@ -3,7 +3,7 @@ package com.example.mission_leesooho.boundedContext.likeablePerson.service;
 import com.example.mission_leesooho.base.rsData.RsData;
 import com.example.mission_leesooho.boundedContext.instaMember.entity.InstaMember;
 import com.example.mission_leesooho.boundedContext.instaMember.service.InstaMemberService;
-import com.example.mission_leesooho.boundedContext.likeablePerson.dto.LikeablePersonResponse;
+import com.example.mission_leesooho.boundedContext.likeablePerson.dto.response.LikeablePersonResponse;
 import com.example.mission_leesooho.boundedContext.likeablePerson.entity.LikeablePerson;
 import com.example.mission_leesooho.boundedContext.likeablePerson.repository.LikeablePersonRepository;
 import com.example.mission_leesooho.boundedContext.member.entity.Member;
@@ -43,7 +43,7 @@ public class LikeablePersonService {
                 .attractiveTypeCode(attractiveTypeCode) // 1=외모, 2=능력, 3=성격
                 .build();
 
-        LikeablePersonResponse likeablePersonResponse = new LikeablePersonResponse(likeablePerson.getToInstaMember(), likeablePerson.getAttractiveTypeCode());
+        LikeablePersonResponse likeablePersonResponse = new LikeablePersonResponse(username, likeablePerson.getAttractiveTypeCode());
 
         likeablePersonRepository.save(likeablePerson); // 저장
 
@@ -61,9 +61,9 @@ public class LikeablePersonService {
             log.info("info : {}", "delete success");
             likeablePersonRepository.delete(likeablePerson);
         }
-        LikeablePersonResponse likeablePersonResponse = new LikeablePersonResponse(likeablePerson.getToInstaMember(), likeablePerson.getAttractiveTypeCode());
+        LikeablePersonResponse likeablePersonResponse = new LikeablePersonResponse(likeablePerson.getToInstaMember().getUsername(), likeablePerson.getAttractiveTypeCode());
 
-        return RsData.of("S-1", "인스타유저(%s)를 호감상대에서 삭제했습니다.".formatted(likeablePersonResponse.getToInstaMember().getUsername()), likeablePersonResponse);
+        return RsData.of("S-1", "인스타유저(%s)를 호감상대에서 삭제했습니다.".formatted(likeablePersonResponse.getName()), likeablePersonResponse);
     }
 
     @Transactional(readOnly = true)
