@@ -1,6 +1,5 @@
 package com.example.mission_leesooho.boundedContext.likeablePerson.dto.response;
 
-import com.example.mission_leesooho.boundedContext.instaMember.entity.InstaMember;
 import lombok.*;
 
 @Getter
