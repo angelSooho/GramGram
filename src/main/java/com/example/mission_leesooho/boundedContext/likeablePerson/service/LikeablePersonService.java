@@ -56,7 +56,7 @@ public class LikeablePersonService {
 
         if (!member.getInstaMember().getId().equals(likeablePerson.getFromInstaMember().getId())) {
             log.error("error : {}", "delete fail");
-            return RsData.of("F-2", "삭제권한이 없습니다.");
+            return RsData.of("F-1", "삭제권한이 없습니다.");
         } else {
             log.info("info : {}", "delete success");
             likeablePersonRepository.delete(likeablePerson);
