@@ -3,7 +3,7 @@ package com.example.mission_leesooho.boundedContext.likeablePerson.service;
 import com.example.mission_leesooho.base.rsData.RsData;
 import com.example.mission_leesooho.boundedContext.instaMember.entity.InstaMember;
 import com.example.mission_leesooho.boundedContext.instaMember.service.InstaMemberService;
-import com.example.mission_leesooho.boundedContext.likeablePerson.dto.response.LikeablePersonResponse;
+import com.example.mission_leesooho.boundedContext.likeablePerson.dto.response.likeResponse;
 import com.example.mission_leesooho.boundedContext.likeablePerson.entity.LikeablePerson;
 import com.example.mission_leesooho.boundedContext.likeablePerson.repository.LikeablePersonRepository;
 import com.example.mission_leesooho.boundedContext.member.entity.Member;
@@ -23,7 +23,7 @@ public class LikeablePersonService {
     private final LikeablePersonRepository likeablePersonRepository;
     private final InstaMemberService instaMemberService;
 
-    public RsData<LikeablePersonResponse> like(Member member, String username, int attractiveTypeCode) {
+    public RsData<likeResponse> like(Member member, String username, int attractiveTypeCode) {
         if (!member.hasConnectedInstaMember()) {
             return RsData.of("F-2", "먼저 본인의 인스타그램 아이디를 입력해야 합니다.");
         }
@@ -43,14 +43,14 @@ public class LikeablePersonService {
                 .attractiveTypeCode(attractiveTypeCode) // 1=외모, 2=능력, 3=성격
                 .build();
 
-        LikeablePersonResponse likeablePersonResponse = new LikeablePersonResponse(username, likeablePerson.getAttractiveTypeCode());
+        likeResponse likeResponse = new likeResponse(username, likeablePerson.getAttractiveTypeCode());
 
         likeablePersonRepository.save(likeablePerson); // 저장
 
-        return RsData.of("S-1", "입력하신 인스타유저(%s)를 호감상대로 등록되었습니다.".formatted(username), likeablePersonResponse);
+        return RsData.of("S-1", "입력하신 인스타유저(%s)를 호감상대로 등록되었습니다.".formatted(username), likeResponse);
     }
 
-    public RsData<LikeablePersonResponse> delete(Member member, Long id) {
+    public RsData<likeResponse> delete(Member member, Long id) {
 
         LikeablePerson likeablePerson = likeablePersonRepository.findById(id).orElseThrow();
 
@@ -61,9 +61,9 @@ public class LikeablePersonService {
             log.info("info : {}", "delete success");
             likeablePersonRepository.delete(likeablePerson);
         }
-        LikeablePersonResponse likeablePersonResponse = new LikeablePersonResponse(likeablePerson.getToInstaMember().getUsername(), likeablePerson.getAttractiveTypeCode());
+        likeResponse likeResponse = new likeResponse(likeablePerson.getToInstaMember().getUsername(), likeablePerson.getAttractiveTypeCode());
 
-        return RsData.of("S-1", "인스타유저(%s)를 호감상대에서 삭제했습니다.".formatted(likeablePersonResponse.getName()), likeablePersonResponse);
+        return RsData.of("S-1", "인스타유저(%s)를 호감상대에서 삭제했습니다.".formatted(likeResponse.getName()), likeResponse);
     }
 
     @Transactional(readOnly = true)
