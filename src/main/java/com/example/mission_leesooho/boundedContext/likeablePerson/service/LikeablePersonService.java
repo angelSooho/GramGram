@@ -19,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 public class LikeablePersonService {
+
     private final LikeablePersonRepository likeablePersonRepository;
     private final InstaMemberService instaMemberService;
 
