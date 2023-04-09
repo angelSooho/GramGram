@@ -66,6 +66,7 @@ public class InstaMemberService {
         return create(username, "U");
     }
 
+
     @Transactional
     public RsData<InstaMember> findByUsernameOrCreate(String username, String gender) {
         Optional<InstaMember> opInstaMember = findByUsername(username);
