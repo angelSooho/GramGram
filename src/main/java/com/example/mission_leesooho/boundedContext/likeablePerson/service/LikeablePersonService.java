@@ -45,6 +45,10 @@ public class LikeablePersonService {
 
         LikeablePersonResponse likeResponse = new LikeablePersonResponse(username, likeablePerson.getAttractiveTypeCode());
 
+        member.getInstaMember().addfLikePeople(likeablePerson);
+        toInstaMember.addtLikePeople(likeablePerson);
+
+
         likeablePersonRepository.save(likeablePerson); // 저장
 
         return RsData.of("S-1", "입력하신 인스타유저(%s)를 호감상대로 등록되었습니다.".formatted(username), likeResponse);
@@ -63,11 +67,26 @@ public class LikeablePersonService {
         }
         LikeablePersonResponse likeResponse = new LikeablePersonResponse(likeablePerson.getToInstaMember().getUsername(), likeablePerson.getAttractiveTypeCode());
 
+        member.getInstaMember().deletefLikePeople(likeablePerson);
+
         return RsData.of("S-1", "인스타유저(%s)를 호감상대에서 삭제했습니다.".formatted(likeResponse.getName()), likeResponse);
     }
 
     @Transactional(readOnly = true)
     public List<LikeablePerson> findByFromInstaMemberId(Long fromInstaMemberId) {
         return likeablePersonRepository.findByFromInstaMemberId(fromInstaMemberId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<LikeablePerson> show(Member member) {
+
+        InstaMember instaMember = member.getInstaMember();
+
+        // 인스타인증을 했는지 체크
+        if (member.getInstaMember() != null) {
+            return instaMember.getFlikeablePeople();
+        }
+
+        throw new RuntimeException();
     }
 }
