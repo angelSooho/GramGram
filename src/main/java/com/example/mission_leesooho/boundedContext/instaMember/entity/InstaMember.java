@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,10 +32,12 @@ public class InstaMember extends BaseTimeEntity {
     private String gender;
 
     @OneToMany(mappedBy = "fromInstaMember", cascade = CascadeType.REMOVE) //likeableperson
+    @LazyCollection(LazyCollectionOption.EXTRA)
     @Builder.Default
     private List<LikeablePerson> flikeablePeople = new ArrayList<>();
 
     @OneToMany(mappedBy = "toInstaMember", cascade = CascadeType.REMOVE) //likeableperson
+    @LazyCollection(LazyCollectionOption.EXTRA)
     @Builder.Default
     private List<LikeablePerson> tlikeablePeople = new ArrayList<>();
 
