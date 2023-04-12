@@ -18,13 +18,13 @@ public class LikeablePerson extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "frominsta_id", nullable = false)
-    private InstaMember fromInstaMember; // 호감을 표시한 사람(인스타 멤버)
+    @JoinColumn(name = "pushinsta_id", nullable = false)
+    private InstaMember pushInstaMember; // 호감을 표시한 사람(인스타 멤버)
     private String fromInstaMemberUsername; // 혹시 몰라서 기록
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "toinsta_id", nullable = false)
-    private InstaMember toInstaMember; // 호감을 받은 사람(인스타 멤버)
+    @JoinColumn(name = "pullinsta_id", nullable = false)
+    private InstaMember pullInstaMember; // 호감을 받은 사람(인스타 멤버)
     private String toInstaMemberUsername; // 혹시 몰라서 기록
 
     private int attractiveTypeCode; // 매력포인트(1=외모, 2=성격, 3=능력)
@@ -35,5 +35,9 @@ public class LikeablePerson extends BaseTimeEntity {
             case 2 -> "성격";
             default -> "능력";
         };
+    }
+
+    public void modifyOption(Integer attractiveTypeCode) {
+        this.attractiveTypeCode = attractiveTypeCode;
     }
 }
