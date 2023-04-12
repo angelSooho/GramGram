@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 @Transactional(readOnly = true)
@@ -28,8 +29,16 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     @Transactional
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(userRequest);
+        String oauthId;
 
-        String oauthId = oAuth2User.getName();
+        if (Objects.equals(String.valueOf(userRequest.getClientRegistration().getRegistrationId()), "naver")) {
+            NaverPrincipal oAuth2UserInfo = new NaverPrincipal((Map<String, Object>)oAuth2User.getAttributes().get("response"));
+
+            log.info(oAuth2User.getName());
+            oauthId = oAuth2UserInfo.getProviderId();
+        } else {
+            oauthId = oAuth2User.getName();
+        }
 
         String providerTypeCode = userRequest.getClientRegistration().getRegistrationId().toUpperCase();
 
