@@ -1,13 +1,12 @@
 package com.example.mission_leesooho.boundedContext.likeablePerson.repository;
 
 import com.example.mission_leesooho.boundedContext.likeablePerson.dto.request.LikeablePersonSearchCond;
-import com.example.mission_leesooho.boundedContext.likeablePerson.dto.response.LikeablePersonResponse;
-import com.example.mission_leesooho.boundedContext.likeablePerson.dto.response.QLikeablePersonResponse;
+import com.example.mission_leesooho.boundedContext.likeablePerson.entity.LikeablePerson;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 
-import java.util.List;
+import java.util.Optional;
 
 import static com.example.mission_leesooho.boundedContext.likeablePerson.entity.QLikeablePerson.likeablePerson;
 import static com.example.mission_leesooho.boundedContext.instaMember.entity.QInstaMember.instaMember;
@@ -22,49 +21,23 @@ public class LikeablePersonRepositoryImpl implements LikeablePersonRepositoryCus
     }
 
     @Override
-    public LikeablePersonResponse findSpecificLikeablePerson(LikeablePersonSearchCond cond) {
-        return queryFactory
-                .select(new QLikeablePersonResponse(
-                        likeablePerson.toInstaMemberUsername,
-                        likeablePerson.attractiveTypeCode
-                ))
-                .from(likeablePerson)
+    public Optional<LikeablePerson> findSpecificLikeablePerson(LikeablePersonSearchCond cond) {
+        return Optional.ofNullable(queryFactory
+                .selectFrom(likeablePerson)
                 .leftJoin(instaMember)
                 .fetchJoin()
                 .where(
-                        InstaMemberIdEq(),
-                        LikeablePersonNameEq(cond),
-                        LikeablepersonCodeEq(cond)
+                        pushInstaMebmerIdEq(cond),
+                        pullInstaMemberIdEq(cond)
                 )
-                .fetchOne();
+                .fetchOne());
     }
 
-    @Override
-    public List<LikeablePersonResponse> findSpecificLikeablePeople(LikeablePersonSearchCond cond) {
-        return queryFactory
-                .select(new QLikeablePersonResponse(
-                    likeablePerson.toInstaMemberUsername,
-                        likeablePerson.attractiveTypeCode
-                ))
-                .from(likeablePerson)
-                .leftJoin(instaMember)
-                .fetchJoin()
-                .where(
-                        InstaMemberIdEq(),
-                        LikeablePersonNameEq(cond)
-                )
-                .fetch();
+    private static BooleanExpression pushInstaMebmerIdEq(LikeablePersonSearchCond cond) {
+        return likeablePerson.pushInstaMember.id.eq(cond.getPushId());
     }
 
-    private static BooleanExpression InstaMemberIdEq() {
-        return likeablePerson.pushInstaMember.id.eq(instaMember.id);
-    }
-
-    private static BooleanExpression LikeablePersonNameEq(LikeablePersonSearchCond cond) {
-        return likeablePerson.pullInstaMember.username.eq(cond.getName());
-    }
-
-    private static BooleanExpression LikeablepersonCodeEq(LikeablePersonSearchCond cond) {
-        return likeablePerson.attractiveTypeCode.eq(cond.getAttractiveTypeCode());
+    private static BooleanExpression pullInstaMemberIdEq(LikeablePersonSearchCond cond) {
+        return likeablePerson.pullInstaMember.id.eq(cond.getPullId());
     }
 }

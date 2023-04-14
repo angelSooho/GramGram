@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -52,18 +54,19 @@ public class LikeablePersonService {
         LikeablePerson likeablePerson = LikeablePerson
                 .builder()
                 .pushInstaMember(member.getInstaMember()) // 호감을 표시하는 사람의 인스타 멤버
-                .fromInstaMemberUsername(member.getInstaMember().getUsername()) // 중요하지 않음
+//                .fromInstaMemberUsername(member.getInstaMember().getUsername()) // 중요하지 않음
                 .pullInstaMember(toInstaMember) // 호감을 받는 사람의 인스타 멤버
-                .toInstaMemberUsername(toInstaMember.getUsername()) // 중요하지 않음
+//                .toInstaMemberUsername(toInstaMember.getUsername()) // 중요하지 않음
                 .attractiveTypeCode(attractiveTypeCode) // 1=외모, 2=능력, 3=성격
                 .build();
         LikeablePersonResponse likeResponse = new LikeablePersonResponse(username, likeablePerson.getAttractiveTypeCode());
 
+        log.info("create likeableperson = {} {}", likeablePerson.getPushInstaMember().getId(), likeablePerson.getPullInstaMember().getId());
         /**
          * 호감유저 동일 옵션인지 확인 메소드
          * 케이스 4, 6 동시처리
          * */
-        String info = SameOptionSearch(likeablePerson);
+        String info = SameAttractiveTypeCodeSearch(likeablePerson);
 
         switch (info) {
             case "error" -> {
@@ -73,7 +76,7 @@ public class LikeablePersonService {
                 log.info("modify success");
                 return RsData.of("S-2", "입력하신 인스타유저(%s)의 호감옵션을 변경하였습니다.".formatted(username), likeResponse);
             }
-            case "new" -> {
+            case "new" ->  {
                 member.getInstaMember().addfLikePeople(likeablePerson);
                 toInstaMember.addtLikePeople(likeablePerson);
                 log.info("make success = {}", likeablePerson);
@@ -81,8 +84,8 @@ public class LikeablePersonService {
                 return RsData.of("S-1", "입력하신 인스타유저(%s)를 호감상대로 등록되었습니다.".formatted(username), likeResponse);
             }
         }
-        log.info("exception");
-        throw new RuntimeException("예외가 발생했습니다");
+        log.error("exception 발생");
+        throw new RuntimeException("예외가 발생했습니다.");
     }
 
     public RsData<LikeablePersonResponse> delete(Member member, Long id) {
@@ -120,22 +123,23 @@ public class LikeablePersonService {
      * 호감유저 동일 옵션인지 확인 메소드
      * querydsl로 동적쿼리 작성
      * */
-    public String SameOptionSearch(LikeablePerson likeablePerson) {
+    public String SameAttractiveTypeCodeSearch(LikeablePerson likeablePerson) {
 
-        LikeablePersonSearchCond cond = new LikeablePersonSearchCond(likeablePerson.getPullInstaMember().getUsername(), likeablePerson.getAttractiveTypeCode());
-        List<LikeablePersonResponse> byLikeablePeronOne = likeablePersonRepository.findSpecificLikeablePeople(cond);
+        LikeablePersonSearchCond SearchCond = new LikeablePersonSearchCond(likeablePerson.getPushInstaMember().getId(), likeablePerson.getPullInstaMember().getId());
 
-        for (LikeablePersonResponse likeablePersonResponse : byLikeablePeronOne) {
-            // 이름과 옵션코드가 같은지
-            if (likeablePersonResponse.getName().equals(likeablePerson.getPullInstaMember().getUsername())) {
-                if (likeablePersonResponse.getAttractiveTypeCode() == likeablePerson.getAttractiveTypeCode()) {
+        log.info("cond check = {}, {}", likeablePerson.getPushInstaMember().getId(), likeablePerson.getPullInstaMember().getId());
+        Optional<LikeablePerson> specificLikeablePerson = likeablePersonRepository.findSpecificLikeablePerson(SearchCond);
+
+        if (specificLikeablePerson.isPresent()) {
+            log.info("error or modify = {} {}", specificLikeablePerson.get().getPullInstaMember().getUsername(), likeablePerson.getPullInstaMember().getUsername());
+            if (Objects.equals(specificLikeablePerson.get().getPullInstaMember().getId(), likeablePerson.getPullInstaMember().getId())) {
+                if (specificLikeablePerson.get().getAttractiveTypeCode() == likeablePerson.getAttractiveTypeCode()) {
                     return "error";
                 } else {
-                    // 생성 쿼리가 너무 많음. 리팩토링시간때 querydsl로 동적쿼리를 짜서 fetch조인으로 쿼리를 줄이는 방향으로 수정할 예정
-                    LikeablePerson modifyLikeablePerson = likeablePersonRepository.findByPullInstaMember(likeablePerson.getPullInstaMember());
+                    log.info("modify = user:{}, {} code: {} -> {}", specificLikeablePerson.get().getPullInstaMember().getUsername(),
+                            likeablePerson.getPullInstaMember().getUsername(), specificLikeablePerson.get().getAttractiveTypeCode(), likeablePerson.getAttractiveTypeCode());
 
-                    log.info("modify = user:{}, code: {} -> {}", modifyLikeablePerson.getPullInstaMember().getUsername(), modifyLikeablePerson.getAttractiveTypeCode(), likeablePerson.getAttractiveTypeCode());
-                    modifyLikeablePerson.modifyOption(likeablePerson.getAttractiveTypeCode());
+                    specificLikeablePerson.get().modifyAttractiveTypeCode(likeablePerson.getAttractiveTypeCode());
                     return "modify";
                 }
             }

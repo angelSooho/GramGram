@@ -5,12 +5,11 @@ import lombok.Getter;
 @Getter
 public class LikeablePersonSearchCond {
 
-    private String name;
+    private final Long pushId;
+    private final Long pullId;
 
-    private Integer attractiveTypeCode;
-
-    public LikeablePersonSearchCond(String name, Integer attractiveTypeCode) {
-        this.name = name;
-        this.attractiveTypeCode = attractiveTypeCode;
+    public LikeablePersonSearchCond(Long pushId, Long pullId) {
+        this.pushId = pushId;
+        this.pullId = pullId;
     }
 }

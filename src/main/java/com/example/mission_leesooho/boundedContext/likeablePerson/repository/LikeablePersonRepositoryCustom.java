@@ -2,11 +2,12 @@ package com.example.mission_leesooho.boundedContext.likeablePerson.repository;
 
 import com.example.mission_leesooho.boundedContext.likeablePerson.dto.request.LikeablePersonSearchCond;
 import com.example.mission_leesooho.boundedContext.likeablePerson.dto.response.LikeablePersonResponse;
+import com.example.mission_leesooho.boundedContext.likeablePerson.entity.LikeablePerson;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface LikeablePersonRepositoryCustom {
 
-    LikeablePersonResponse findSpecificLikeablePerson(LikeablePersonSearchCond cond);
-    List<LikeablePersonResponse> findSpecificLikeablePeople(LikeablePersonSearchCond cond);
+    Optional<LikeablePerson> findSpecificLikeablePerson(LikeablePersonSearchCond cond);
 }
