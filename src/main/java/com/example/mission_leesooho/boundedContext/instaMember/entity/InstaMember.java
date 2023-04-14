@@ -31,12 +31,12 @@ public class InstaMember extends BaseTimeEntity {
     @Column(nullable = false)
     private String gender;
 
-    @OneToMany(mappedBy = "pushInstaMember", cascade = CascadeType.REMOVE) // 내가 호감을 누른
+    @OneToMany(mappedBy = "pushInstaMember", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY) // 내가 호감을 누른
     @LazyCollection(LazyCollectionOption.EXTRA)
     @Builder.Default
     private List<LikeablePerson> pushLikeablePeople = new ArrayList<>();
 
-    @OneToMany(mappedBy = "pullInstaMember", cascade = CascadeType.REMOVE) // 내가 호감을 받은
+    @OneToMany(mappedBy = "pullInstaMember", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY) // 내가 호감을 받은
     @LazyCollection(LazyCollectionOption.EXTRA)
     @Builder.Default
     private List<LikeablePerson> pullLikeablePeople = new ArrayList<>();
