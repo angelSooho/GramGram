@@ -34,10 +34,10 @@ public class LikeablePersonRepositoryImpl implements LikeablePersonRepositoryCus
     }
 
     private static BooleanExpression pushInstaMebmerIdEq(LikeablePersonSearchCond cond) {
-        return likeablePerson.pushInstaMember.id.eq(cond.getPushId());
+        return likeablePerson.pushInstaMember.id.eq(cond.pushId());
     }
 
     private static BooleanExpression pullInstaMemberIdEq(LikeablePersonSearchCond cond) {
-        return likeablePerson.pullInstaMember.id.eq(cond.getPullId());
+        return likeablePerson.pullInstaMember.id.eq(cond.pullId());
     }
 }

@@ -4,7 +4,6 @@ import com.example.mission_leesooho.boundedContext.instaMember.service.InstaMemb
 import com.example.mission_leesooho.boundedContext.likeablePerson.service.LikeablePersonService;
 import com.example.mission_leesooho.boundedContext.member.entity.Member;
 import com.example.mission_leesooho.boundedContext.member.service.MemberService;
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
