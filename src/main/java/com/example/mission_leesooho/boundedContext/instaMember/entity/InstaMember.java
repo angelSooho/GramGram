@@ -31,15 +31,15 @@ public class InstaMember extends BaseTimeEntity {
     @Column(nullable = false)
     private String gender;
 
-    @OneToMany(mappedBy = "fromInstaMember", cascade = CascadeType.REMOVE) //likeableperson
+    @OneToMany(mappedBy = "pushInstaMember", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY) // 내가 호감을 누른
     @LazyCollection(LazyCollectionOption.EXTRA)
     @Builder.Default
-    private List<LikeablePerson> flikeablePeople = new ArrayList<>();
+    private List<LikeablePerson> pushLikeablePeople = new ArrayList<>();
 
-    @OneToMany(mappedBy = "toInstaMember", cascade = CascadeType.REMOVE) //likeableperson
+    @OneToMany(mappedBy = "pullInstaMember", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY) // 내가 호감을 받은
     @LazyCollection(LazyCollectionOption.EXTRA)
     @Builder.Default
-    private List<LikeablePerson> tlikeablePeople = new ArrayList<>();
+    private List<LikeablePerson> pullLikeablePeople = new ArrayList<>();
 
 
 
@@ -48,19 +48,19 @@ public class InstaMember extends BaseTimeEntity {
     }
 
     public void addfLikePeople(LikeablePerson likeablePerson) {
-        this.flikeablePeople.add(likeablePerson);
+        this.pushLikeablePeople.add(likeablePerson);
     }
 
     public void deletefLikePeople(LikeablePerson likeablePerson) {
-        this.flikeablePeople.remove(likeablePerson);
+        this.pushLikeablePeople.remove(likeablePerson);
     }
 
     public void addtLikePeople(LikeablePerson likeablePerson) {
-        this.tlikeablePeople.add(likeablePerson);
+        this.pullLikeablePeople.add(likeablePerson);
     }
 
     public void deletetLikePeople(LikeablePerson likeablePerson) {
-        this.tlikeablePeople.remove(likeablePerson);
+        this.pullLikeablePeople.remove(likeablePerson);
     }
 
 

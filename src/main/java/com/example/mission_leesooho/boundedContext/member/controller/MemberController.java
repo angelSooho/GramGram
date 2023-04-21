@@ -7,8 +7,6 @@ import com.example.mission_leesooho.boundedContext.member.service.MemberService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -29,21 +27,15 @@ public class MemberController {
         return "usr/member/join";
     }
 
-    @AllArgsConstructor // @Setter 도 가능, 데이터를 저장할 방편을 마련하기 위해서
-    @Getter // joinForm.getUsername() 이런 코드 가능하게
-    public static class JoinForm {
-        @NotBlank // 비어있지 않아야 하고, 공백으로만 이루어 지지도 않아야 한다.
-        @Size(min = 4, max = 30) // 4자 이상, 30자 이하
-        private final String username;
-        @NotBlank
-        @Size(min = 4, max = 30)
-        private final String password;
+
+    public record UserForm(@NotBlank @Size(min = 4, max = 30) String username,
+                               @NotBlank @Size(min = 4, max = 30) String password) {
     }
 
     @PreAuthorize("isAnonymous()")
     @PostMapping("/join")
-    public String join(@Valid JoinForm joinForm) { // @Valid 가 없으면 @NotBlank 등이 작동하지 않음, 만약에 유효성 문제가 있다면 즉시 정지
-        RsData<Member> joinRs = memberService.join(joinForm.getUsername(), joinForm.getPassword());
+    public String join(@Valid UserForm joinForm) { // @Valid 가 없으면 @NotBlank 등이 작동하지 않음, 만약에 유효성 문제가 있다면 즉시 정지
+        RsData<Member> joinRs = memberService.join(joinForm.username(), joinForm.password());
 
         if (joinRs.isFail()) {
             // 뒤로가기 하고 거기서 메세지 보여줘
@@ -53,6 +45,27 @@ public class MemberController {
         // 아래 링크로 리다이렉트(302, 이동) 하고 그 페이지에서 메세지 보여줘
         return rq.redirectWithMsg("/member/login", joinRs);
     }
+
+    // 아이디 찾기, 비밀번호 찾기 로직 미완성
+//    @PreAuthorize("isAnonymous()")
+//    @GetMapping("/search-id")
+//    public String showIdSearch() {
+//        return "usr/member/search-id";
+//    }
+//
+//    @PreAuthorize("isAnonymous()")
+//    @PostMapping("/search-id")
+//    public String search(@Valid UserForm searchForm) {
+//        RsData<Member> searchRs = memberService.searchId(searchForm.username(), searchForm.password());
+//
+//        if (searchRs.isFail()) {
+//            // 뒤로가기 하고 거기서 메세지 보여줘
+//            return rq.historyBack(searchRs);
+//        }
+//
+//        // 아래 링크로 리다이렉트(302, 이동) 하고 그 페이지에서 메세지 보여줘
+//        return rq.redirectWithMsg("/member/searchresult", searchRs);
+//    }
 
     @PreAuthorize("isAnonymous()")
     @GetMapping("/login") // 로그인 폼, 로그인 폼 처리는 스프링 시큐리티가 구현, 폼 처리시에 CustomUserDetailsService 가 사용됨

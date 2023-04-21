@@ -39,4 +39,7 @@ out/
 ### yml & properties ###
 src/main/resources/application-secret.yml
 
+### Q Files ###
+/src/main/generated/
+
 

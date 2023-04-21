@@ -1,5 +1,6 @@
 package com.example.mission_leesooho.boundedContext.likeablePerson.controller;
 
+import com.example.mission_leesooho.base.initData.AppConfig;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -160,7 +160,7 @@ public class LikeablePersonControllerTests {
          *
          * */
 
-        // get & when
+        // get && when
         // 1
         ResultActions resultActions = mvc
                 .perform(get("/likeablePerson/delete/{id}", 1))
@@ -201,7 +201,7 @@ public class LikeablePersonControllerTests {
     @DisplayName("호감인원 삭제 실패")
     @WithUserDetails("user1")
     void t007() throws Exception {
-        // get & when
+        // get && when
         // 1
         ResultActions resultActions = mvc
                 .perform(get("/likeablePerson/delete/{id}", 2))
@@ -220,5 +220,61 @@ public class LikeablePersonControllerTests {
                 .andExpect(handler().handlerType(LikeablePersonController.class))
                 .andExpect(handler().methodName("delete"))
                 .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    @DisplayName("호감유저등록시, (이름,코드) 중복 성공")
+    @WithUserDetails("user1")
+    void t008() throws Exception {
+
+        // get && when
+        ResultActions resultActions = mvc
+                .perform(post("/likeablePerson/add")
+                        .with(csrf()) // CSRF 키 생성
+                        .param("username", "insta_user3")
+                        .param("attractiveTypeCode", "2")
+                )
+                .andDo(print());
+
+        // then
+        resultActions
+                .andExpect(handler().handlerType(LikeablePersonController.class))
+                .andExpect(handler().methodName("add"))
+                .andExpect(status().is3xxRedirection());
+    }
+
+    @Test
+    @DisplayName("호감유저등록시, (이름,코드) 중복 실패")
+    @WithUserDetails("user3")
+    void t009() throws Exception {
+        // get && when
+        ResultActions resultActions = mvc
+                .perform(post("/likeablePerson/add")
+                        .with(csrf()) // CSRF 키 생성
+                        .param("username", "insta_user4")
+                        .param("attractiveTypeCode", "1")
+                )
+                .andDo(print());
+
+        // then
+        resultActions
+                .andExpect(handler().handlerType(LikeablePersonController.class))
+                .andExpect(handler().methodName("add"))
+                .andExpect(status().is3xxRedirection());
+
+//        Assertions.assertThat()
+    }
+
+    @Test
+    public void t010() throws Exception {
+        //given && when
+        long lstMax = AppConfig.getLst_max();
+
+        //then
+        Assertions.assertThat(lstMax).isEqualTo(10L);
+        Assertions.assertThat(lstMax).isEqualTo(10L);
+        Assertions.assertThat(lstMax).isEqualTo(10L);
+
+
     }
 }

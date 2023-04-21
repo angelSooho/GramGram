@@ -18,7 +18,7 @@
     <th:block th:if="${@rq.member.hasConnectedInstaMember}">
         <ul>
             <li th:each="likeablePerson: ${likeablePeople}">
-                <span class="toInstaMember_username" th:text="${likeablePerson.toInstaMember.username}"></span>
+                <span class="toInstaMember_username" th:text="${likeablePerson.pullInstaMember.username}"></span>
                 <span class="toInstaMember_attractiveTypeDisplayName"
                       th:text="${likeablePerson.attractiveTypeDisplayName}"></span>
                 <a href="javascript:;" onclick="if (confirm('정말로 삭제하시겠습니까?')) $(this).next().submit();">삭제</a>
