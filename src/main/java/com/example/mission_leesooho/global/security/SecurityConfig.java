@@ -1,4 +1,4 @@
-package com.example.mission_leesooho.base.security;
+package com.example.mission_leesooho.global.security;
 
 
 import org.springframework.context.annotation.Bean;
@@ -19,15 +19,15 @@ public class SecurityConfig {
         http
                 .formLogin(
                         formLogin -> formLogin
-                                .loginPage("/member/login")
+                                .loginPage("/usr/member/login")
                 )
                 .oauth2Login(
                         oauth2Login -> oauth2Login
-                                .loginPage("/member/login")
+                                .loginPage("/usr/member/login")
                 )
                 .logout(
                         logout -> logout
-                                .logoutUrl("/member/logout")
+                                .logoutUrl("/usr/member/logout")
                 );
 
         return http.build();

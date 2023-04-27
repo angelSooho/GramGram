@@ -1,4 +1,4 @@
-package com.example.mission_leesooho.base.security;
+package com.example.mission_leesooho.global.security;
 
 import java.util.Map;
 

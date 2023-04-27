@@ -1,4 +1,4 @@
-package com.example.mission_leesooho.base.security;
+package com.example.mission_leesooho.global.security;
 
 import com.example.mission_leesooho.boundedContext.member.entity.Member;
 import com.example.mission_leesooho.boundedContext.member.repository.MemberRepository;

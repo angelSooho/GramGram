@@ -1,9 +1,9 @@
 package com.example.mission_leesooho.boundedContext.home.controller;
 
-import com.example.mission_leesooho.base.rq.Rq;
+import com.example.mission_leesooho.global.rq.Rq;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -14,14 +14,16 @@ import java.util.Enumeration;
 @RequiredArgsConstructor
 public class HomeController {
 
-    Rq rq;
+    private final Rq rq;
+
     @GetMapping("/")
     public String showMain() {
         return "usr/home/main";
     }
 
-    @GetMapping("/debugSession")
     @ResponseBody
+    @GetMapping("/usr/debugSession")
+    @PreAuthorize("hasAuthority('admin')")
     public String showDebugSession(HttpSession session) {
         StringBuilder sb = new StringBuilder("Session content:\n");
 
@@ -35,7 +37,8 @@ public class HomeController {
         return sb.toString().replaceAll("\n", "<br>");
     }
 
-    @GetMapping("/historyBackTest")
+    @GetMapping("/usr/historyBackTest")
+    @PreAuthorize("hasAuthority('admin')")
     public String showHistoryBackTest(HttpSession session) {
         return rq.historyBack("지정된 경로로 입장하지 않았습니다.");
     }

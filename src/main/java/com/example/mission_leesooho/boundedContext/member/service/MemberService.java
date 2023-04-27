@@ -1,6 +1,6 @@
 package com.example.mission_leesooho.boundedContext.member.service;
 
-import com.example.mission_leesooho.base.rsData.RsData;
+import com.example.mission_leesooho.global.rsData.RsData;
 import com.example.mission_leesooho.boundedContext.instaMember.entity.InstaMember;
 import com.example.mission_leesooho.boundedContext.member.entity.Member;
 import com.example.mission_leesooho.boundedContext.member.repository.MemberRepository;

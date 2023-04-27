@@ -1,4 +1,4 @@
-package com.example.mission_leesooho.base.rsData;
+package com.example.mission_leesooho.global.rsData;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,7 +1,7 @@
 package com.example.mission_leesooho.boundedContext.instaMember.controller;
 
-import com.example.mission_leesooho.base.rq.Rq;
-import com.example.mission_leesooho.base.rsData.RsData;
+import com.example.mission_leesooho.global.rq.Rq;
+import com.example.mission_leesooho.global.rsData.RsData;
 import com.example.mission_leesooho.boundedContext.instaMember.entity.InstaMember;
 import com.example.mission_leesooho.boundedContext.instaMember.service.InstaMemberService;
 import jakarta.validation.Valid;
@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 
 @Controller
-@RequestMapping("/instaMember")
 @RequiredArgsConstructor
+@RequestMapping("/usr/instaMember")
 public class InstaMemberController {
     private final Rq rq;
     private final InstaMemberService instaMemberService;
@@ -34,7 +34,7 @@ public class InstaMemberController {
     @Getter
     public static class ConnectForm {
         @NotBlank
-        @Size(min = 4, max = 30)
+        @Size(min = 3, max = 30)
         private final String username;
         @NotBlank
         @Size(min = 1, max = 1)
@@ -46,10 +46,10 @@ public class InstaMemberController {
     public String connect(@Valid ConnectForm connectForm) {
         RsData<InstaMember> rsData = instaMemberService.connect(rq.getMember(), connectForm.getUsername(), connectForm.getGender());
 
-        if ( rsData.isFail() ) {
+        if (rsData.isFail()) {
             return rq.historyBack(rsData);
         }
 
-        return rq.redirectWithMsg("/likeablePerson/add", "인스타그램 계정이 연결되었습니다.");
+        return rq.redirectWithMsg("/usr/likeablePerson/like", "인스타그램 계정이 연결되었습니다.");
     }
 }

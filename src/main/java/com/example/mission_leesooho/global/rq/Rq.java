@@ -1,6 +1,6 @@
-package com.example.mission_leesooho.base.rq;
+package com.example.mission_leesooho.global.rq;
 
-import com.example.mission_leesooho.base.rsData.RsData;
+import com.example.mission_leesooho.global.rsData.RsData;
 import com.example.mission_leesooho.boundedContext.member.entity.Member;
 import com.example.mission_leesooho.boundedContext.member.service.MemberService;
 import com.example.mission_leesooho.standard.util.Ut;

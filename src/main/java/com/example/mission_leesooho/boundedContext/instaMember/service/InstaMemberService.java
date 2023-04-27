@@ -1,6 +1,9 @@
 package com.example.mission_leesooho.boundedContext.instaMember.service;
 
-import com.example.mission_leesooho.base.rsData.RsData;
+import com.example.mission_leesooho.boundedContext.instaMember.entity.InstaMemberSnapShot;
+import com.example.mission_leesooho.boundedContext.instaMember.repository.InstaMemberSnapShotRepository;
+import com.example.mission_leesooho.boundedContext.likeablePerson.entity.LikeablePerson;
+import com.example.mission_leesooho.global.rsData.RsData;
 import com.example.mission_leesooho.boundedContext.instaMember.entity.InstaMember;
 import com.example.mission_leesooho.boundedContext.instaMember.repository.InstaMemberRepository;
 import com.example.mission_leesooho.boundedContext.member.entity.Member;
@@ -17,6 +20,7 @@ import java.util.Optional;
 public class InstaMemberService {
     private final InstaMemberRepository instaMemberRepository;
     private final MemberService memberService;
+    private final InstaMemberSnapShotRepository instaMemberSnapshotRepository;
 
     public Optional<InstaMember> findByUsername(String username) {
         return instaMemberRepository.findByUsername(username);
@@ -58,12 +62,12 @@ public class InstaMemberService {
 
     @Transactional
     public RsData<InstaMember> findByUsernameOrCreate(String username) {
+
         Optional<InstaMember> opInstaMember = findByUsername(username);
 
-        if (opInstaMember.isPresent()) return RsData.of("S-2", "인스타계정이 등록되었습니다.", opInstaMember.get());
-
-        // 아직 성별을 알 수 없으니, 언노운의 의미로 U 넣음
-        return create(username, "U");
+        return opInstaMember.map(instaMember -> RsData.of("S-2", "인스타계정이 등록되었습니다.", instaMember)).orElseGet(() -> opInstaMember
+                .map(instaMember -> RsData.of("S-2", "인스타계정이 등록되었습니다.", instaMember))
+                .orElseGet(() -> create(username, "U")));
     }
 
 
@@ -74,7 +78,7 @@ public class InstaMemberService {
         // 찾았다면
         if (opInstaMember.isPresent()) {
             InstaMember instaMember = opInstaMember.get();
-            instaMember.SelectGender(gender); // 성별세팅
+            instaMember.updateGender(gender); // 성별세팅
             instaMemberRepository.save(instaMember); // 저장
 
             // 기존 인스타회원이랑 연결
@@ -83,5 +87,59 @@ public class InstaMemberService {
 
         // 생성
         return create(username, gender);
+    }
+
+    private void saveSnapshot(InstaMemberSnapShot snapshot) {
+        instaMemberSnapshotRepository.save(snapshot);
+    }
+
+    public void whenAfterModifyAttractiveType(LikeablePerson likeablePerson, int oldAttractiveTypeCode) {
+        InstaMember fromInstaMember = likeablePerson.getPushInstaMember();
+        InstaMember toInstaMember = likeablePerson.getPullInstaMember();
+
+        toInstaMember.decreaseLikesCount(fromInstaMember.getGender(), oldAttractiveTypeCode);
+        toInstaMember.increaseLikesCount(fromInstaMember.getGender(), likeablePerson.getAttractiveTypeCode());
+
+        InstaMemberSnapShot snapshot = toInstaMember.snapshot("ModifyAttractiveType");
+
+        saveSnapshot(snapshot);
+    }
+
+    public void whenAfterLike(LikeablePerson likeablePerson) {
+        InstaMember fromInstaMember = likeablePerson.getPushInstaMember();
+        InstaMember toInstaMember = likeablePerson.getPullInstaMember();
+
+        toInstaMember.increaseLikesCount(fromInstaMember.getGender(), likeablePerson.getAttractiveTypeCode());
+
+        InstaMemberSnapShot snapshot = toInstaMember.snapshot("Like");
+
+        saveSnapshot(snapshot);
+
+        // 알림
+    }
+
+    public void whenBeforeCancelLike(LikeablePerson likeablePerson) {
+        InstaMember fromInstaMember = likeablePerson.getPushInstaMember();
+        InstaMember toInstaMember = likeablePerson.getPullInstaMember();
+
+        toInstaMember.decreaseLikesCount(fromInstaMember.getGender(), likeablePerson.getAttractiveTypeCode());
+
+        InstaMemberSnapShot snapshot = toInstaMember.snapshot("CancelLike");
+
+        saveSnapshot(snapshot);
+    }
+
+    public void whenAfterFromInstaMemberChangeGender(InstaMember instaMember, String oldGender) {
+        instaMember
+                .getPushLikeablePeople()
+                .forEach(likeablePerson -> {
+                    InstaMember toInstaMember = likeablePerson.getPullInstaMember();
+                    toInstaMember.decreaseLikesCount(oldGender, likeablePerson.getAttractiveTypeCode());
+                    toInstaMember.increaseLikesCount(instaMember.getGender(), likeablePerson.getAttractiveTypeCode());
+
+                    InstaMemberSnapShot snapshot = toInstaMember.snapshot("FromInstaMemberChangeGender");
+
+                    saveSnapshot(snapshot);
+                });
     }
 }

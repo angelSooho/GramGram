@@ -1,10 +1,10 @@
 package com.example.mission_leesooho.boundedContext.likeablePerson.controller;
 
-import com.example.mission_leesooho.base.initData.AppConfig;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithUserDetails;
@@ -263,18 +263,5 @@ public class LikeablePersonControllerTests {
                 .andExpect(status().is3xxRedirection());
 
 //        Assertions.assertThat()
-    }
-
-    @Test
-    public void t010() throws Exception {
-        //given && when
-        long lstMax = AppConfig.getLst_max();
-
-        //then
-        Assertions.assertThat(lstMax).isEqualTo(10L);
-        Assertions.assertThat(lstMax).isEqualTo(10L);
-        Assertions.assertThat(lstMax).isEqualTo(10L);
-
-
     }
 }
