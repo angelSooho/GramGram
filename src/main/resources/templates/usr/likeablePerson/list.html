@@ -42,18 +42,18 @@
                             </div>
 
                             <div class="card-actions justify-center">
-                                <a th:href="@{|modify/${likeablePerson.id}|}" class="btn btn-sm btn-outline">
+                                <a th:href="@{|modify/${likeablePerson.id}|}" onclick="return confirm('수정하시겠습니까?')" class="btn btn-sm btn-outline">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                     &nbsp;
                                     호감사유 변경
                                 </a>
-                                <a class="btn btn-sm btn-outline" th:href="@{|delete/${likeablePerson.id}|}"
-                                   onclick="if ( confirm('정말로 취소하시겠습니까?') ) $(this).next().submit();">
+                                <a class="btn btn-sm btn-outline" href="javascript:"
+                                   onclick="if (confirm('취소하시겠습니까?')) $(this).next().submit();">
                                     <i class="fa-solid fa-user-slash"></i>
                                     &nbsp;
                                     호감취소
                                 </a>
-                                <form hidden th:action="@{|/usr/likeablePerson/${likeablePerson.id}|}" method="POST">
+                                <form hidden th:action="@{|/usr/likeablePerson/delete/${likeablePerson.id}|}" method="POST">
                                     <input type="hidden" name="_method" value="delete">
                                 </form>
                             </div>

@@ -36,6 +36,9 @@ public class LikeablePersonService {
     @Value("${likeable-person.lst-max}")
     private long lst_max;
 
+    @Value("${likeable-person.time-limit}")
+    private long time_limit;
+
     public RsData<LikeablePersonResponse> like(Member member, String username, int attractiveTypeCode) {
 
         if (!member.hasConnectedInstaMember()) {
@@ -77,6 +80,9 @@ public class LikeablePersonService {
                 return RsData.of("F-4", "동일한 옵션의 호감유저를 추가할 수 없습니다.");
             }
             case "modify" -> {
+                if ((LocalDateTime.now().getHour() - likeablePerson.getModifyDate().getHour()) < time_limit) {
+                    return RsData.of("F-3", "수정은 작성 후 %s시간 이후부터 가능합니다.".formatted(time_limit));
+                }
                 return RsData.of("S-2", "입력하신 인스타유저(%s)의 호감옵션을 변경하였습니다.".formatted(username), likeResponse);
             }
             case "new" ->  {
@@ -95,8 +101,8 @@ public class LikeablePersonService {
         LikeablePerson likeablePerson = likeablePersonRepository.findById(id).orElseThrow();
 
         log.info("time = {} {}", LocalDateTime.now(), likeablePerson.getCreateDate());
-        if ((LocalDateTime.now().getHour() - likeablePerson.getCreateDate().getHour()) < 3) {
-            return RsData.of("F-3", "삭제는 작성 후 3시간 이후부터 가능합니다.");
+        if ((LocalDateTime.now().getHour() - likeablePerson.getCreateDate().getHour()) < time_limit) {
+            return RsData.of("F-3", "삭제는 작성 후 %s시간 이후부터 가능합니다.".formatted(time_limit));
         }
         if (!member.getInstaMember().getId().equals(likeablePerson.getPushInstaMember().getId())) {
             log.error("delete fail");
@@ -157,8 +163,8 @@ public class LikeablePersonService {
         if (!Objects.equals(modifyLikeablePerson.getPushInstaMember().getId(), fromInstaMember.getId())) {
             return RsData.of("F-2", "해당 호감표시를 취소할 권한이 없습니다.");
         }
-        if ((LocalDateTime.now().getHour() - modifyLikeablePerson.getModifyDate().getHour()) < 3) {
-            return RsData.of("F-3", "수정은 작성 후 3시간 이후부터 가능합니다.");
+        if ((LocalDateTime.now().getHour() - modifyLikeablePerson.getModifyDate().getHour()) < time_limit) {
+            return RsData.of("F-3", "수정은 작성 후 %s시간 이후부터 가능합니다.".formatted(time_limit));
         }
 
         return RsData.of("S-1", "호감표시를 수정합니다.", modifyLikeablePerson);
