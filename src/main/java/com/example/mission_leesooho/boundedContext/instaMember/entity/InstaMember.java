@@ -36,12 +36,6 @@ public class InstaMember extends InstaMemberBase {
     @Builder.Default
     private List<LikeablePerson> pullLikeablePeople = new ArrayList<>();
 
-
-
-    public void SelectGender(String gender) {
-        this.gender = gender;
-    }
-
     public void addfLikePeople(LikeablePerson likeablePerson) {
         this.pushLikeablePeople.add(likeablePerson);
     }
@@ -64,6 +58,13 @@ public class InstaMember extends InstaMemberBase {
             case "W" -> "여성";
             default -> "남성";
         };
+    }
+
+    public String getGenderDisplayNameWithIcon() {
+        return switch (gender) {
+            case "W" -> "<i class=\"fa-solid fa-person-dress\"></i>";
+            default -> "<i class=\"fa-solid fa-person\"></i>";
+        } + "&nbsp;" + getGenderDisplayName();
     }
 
     public void increaseLikesCount(String gender, int attractiveTypeCode) {

@@ -74,6 +74,7 @@ public class LikeablePersonService {
 
         String info = SameAttractiveTypeCodeSearch(likeablePerson);
 
+        // 분할 필요함
         switch (info) {
             case "error" -> {
                 log.error("make, modify error");

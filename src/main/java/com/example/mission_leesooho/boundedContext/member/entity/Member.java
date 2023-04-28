@@ -29,11 +29,6 @@ public class Member extends BaseTimeEntity {
     @OneToOne // 1:1
     private InstaMember instaMember;
 
-    public String getNickname() {
-        // 최소 6자 이상
-        return "%1$4s".formatted(Long.toString(getId(), 36)).replace(' ', '0');
-    }
-
     // 이 함수 자체는 만들어야 한다. 스프링 시큐리티 규격
     public List<? extends GrantedAuthority> getGrantedAuthorities() {
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
@@ -42,11 +37,15 @@ public class Member extends BaseTimeEntity {
         grantedAuthorities.add(new SimpleGrantedAuthority("member"));
 
         // username이 admin인 회원은 추가로 admin 권한도 가진다.
-        if ("admin".equals(username)) {
+        if (isAdmin()) {
             grantedAuthorities.add(new SimpleGrantedAuthority("admin"));
         }
 
         return grantedAuthorities;
+    }
+
+    public boolean isAdmin() {
+        return "admin".equals(username);
     }
 
     // 이 회원이 본인의 인스타ID를 등록했는지 안했는지
@@ -54,7 +53,12 @@ public class Member extends BaseTimeEntity {
         return instaMember != null;
     }
 
-    public void SelectInsta(InstaMember instaMember) {
+    public String getNickname() {
+        // 최소 6자 이상
+        return "%1$4s".formatted(Long.toString(getId(), 36)).replace(' ', '0');
+    }
+
+    public void updateInstaMember(InstaMember instaMember) {
         this.instaMember = instaMember;
     }
 }
