@@ -27,7 +27,7 @@ public class LikeablePersonController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/like")
-    public String showAdd() {
+    public String showLike() {
         return "usr/likeablePerson/like";
     }
 

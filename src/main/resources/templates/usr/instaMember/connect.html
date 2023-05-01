@@ -1,4 +1,4 @@
-<html layout:decorate="~{usr/layout/layout.html}">
+<html layout:decorate="~{usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
 
 <head>
     <title>인스타 아이디 입력</title>
@@ -48,10 +48,12 @@
                 <label class="label">
                     <span class="label-text">인스타 아이디</span>
                 </label>
-                <input type="text" name="username" placeholder="인스타 아이디" class="input input-bordered" autofocus
-                       onchange="$(this).keyup();"
-                       onkeyup="$(this).next().children(':last-child').text(this.value.trim());"
-                       onpaste="setTimeoutZero(() => $(this).keyup());"/>
+                <label>
+                    <input type="text" name="username" placeholder="인스타 아이디" class="input input-bordered" autofocus
+                           onchange="$(this).keyup();"
+                           onkeyup="$(this).next().children(':last-child').text(this.value.trim());"
+                           onpaste="setTimeoutZero(() => $(this).keyup());"/>
+                </label>
                 <a href="#" onclick="$(this).attr('href', $(this).text().replaceAll(' ', ''));" target="_blank"
                    class="block mt-3 text-sm break-all underline text-blue-400">
                     <span>https://instagram.com/</span><span class="text-red-300"></span>

@@ -1,5 +1,7 @@
 package com.example.mission_leesooho.boundedContext.instaMember.controller;
 
+import com.example.mission_leesooho.boundedContext.instaMember.dto.form.ConnectByApiForm;
+import com.example.mission_leesooho.boundedContext.instaMember.dto.form.ConnectForm;
 import com.example.mission_leesooho.global.rq.Rq;
 import com.example.mission_leesooho.global.rsData.RsData;
 import com.example.mission_leesooho.boundedContext.instaMember.entity.InstaMember;
@@ -18,8 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 
 @Controller
-@RequiredArgsConstructor
 @RequestMapping("/usr/instaMember")
+@RequiredArgsConstructor
 public class InstaMemberController {
     private final Rq rq;
     private final InstaMemberService instaMemberService;
@@ -30,26 +32,29 @@ public class InstaMemberController {
         return "usr/instaMember/connect";
     }
 
-    @AllArgsConstructor
-    @Getter
-    public static class ConnectForm {
-        @NotBlank
-        @Size(min = 3, max = 30)
-        private final String username;
-        @NotBlank
-        @Size(min = 1, max = 1)
-        private final String gender;
-    }
-
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/connect")
     public String connect(@Valid ConnectForm connectForm) {
-        RsData<InstaMember> rsData = instaMemberService.connect(rq.getMember(), connectForm.getUsername(), connectForm.getGender());
+        RsData<InstaMember> rsData = instaMemberService.connect(rq.getMember(), connectForm.username(), connectForm.gender());
 
         if (rsData.isFail()) {
             return rq.historyBack(rsData);
         }
 
         return rq.redirectWithMsg("/usr/likeablePerson/like", "인스타그램 계정이 연결되었습니다.");
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/connectByApi")
+    public String showConnectByApi() {
+        return "usr/instaMember/connectByApi";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/connectByApi")
+    public String connectByApi(@Valid ConnectByApiForm connectForm) {
+        rq.setSessionAttr("connectByApi__gender", connectForm.gender());
+
+        return "redirect:/oauth2/authorization/instagram";
     }
 }

@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-@Setter
 @AllArgsConstructor
 public class RsData<T> {
     private String resultCode;
@@ -33,6 +32,6 @@ public class RsData<T> {
     }
 
     public boolean isFail() {
-        return isSuccess() == false;
+        return !isSuccess();
     }
 }

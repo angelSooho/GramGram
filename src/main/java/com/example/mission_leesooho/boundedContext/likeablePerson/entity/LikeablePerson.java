@@ -8,6 +8,10 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 
@@ -29,6 +33,16 @@ public class LikeablePerson extends BaseTimeEntity {
     private InstaMember pullInstaMember;
 
     private int attractiveTypeCode;
+
+    private LocalDateTime modifyUnlockDate;
+
+    public boolean isModifyUnlocked() {
+        return modifyUnlockDate.isBefore(LocalDateTime.now());
+    }
+
+    public String getModifyUnlockDateRemainStrHuman() {
+        return modifyUnlockDate.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.LONG));
+    }
 
     public String getAttractiveTypeDisplayName() {
         return switch (attractiveTypeCode) {

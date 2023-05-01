@@ -20,26 +20,20 @@ import java.util.Optional;
 public class InstaMemberService {
     private final InstaMemberRepository instaMemberRepository;
     private final MemberService memberService;
-    private final InstaMemberSnapShotRepository instaMemberSnapshotRepository;
+    private final InstaMemberSnapShotRepository InstaMemberSnapShotRepository;
 
     public Optional<InstaMember> findByUsername(String username) {
         return instaMemberRepository.findByUsername(username);
     }
 
     @Transactional
-    // member : 현재 로그인한 회원
-    // username : 입력한 본인 인스타 username
-    // gender : 입력한 본인의 성별
     public RsData<InstaMember> connect(Member member, String username, String gender) {
-        Optional<InstaMember> opInstaMember = findByUsername(username); // 혹시 다른 회원이 이미 입력하신 인스타 ID와 연결되었는지
+        Optional<InstaMember> opInstaMember = findByUsername(username);
 
-        // 등록이 되어있고, 성별이 U가 아니라
         if (opInstaMember.isPresent() && !opInstaMember.get().getGender().equals("U")) {
-            // 그러면 실패
             return RsData.of("F-1", "해당 인스타그램 아이디는 이미 다른 사용자와 연결되었습니다.");
         }
 
-        //
         RsData<InstaMember> instaMemberRsData = findByUsernameOrCreate(username, gender);
 
         memberService.updateInstaMember(member, instaMemberRsData.getData());
@@ -47,7 +41,6 @@ public class InstaMemberService {
         return instaMemberRsData;
     }
 
-    // InstaMember 생성
     private RsData<InstaMember> create(String username, String gender) {
         InstaMember instaMember = InstaMember
                 .builder()
@@ -62,56 +55,51 @@ public class InstaMemberService {
 
     @Transactional
     public RsData<InstaMember> findByUsernameOrCreate(String username) {
-
         Optional<InstaMember> opInstaMember = findByUsername(username);
 
-        return opInstaMember.map(instaMember -> RsData.of("S-2", "인스타계정이 등록되었습니다.", instaMember)).orElseGet(() -> opInstaMember
+        return opInstaMember
                 .map(instaMember -> RsData.of("S-2", "인스타계정이 등록되었습니다.", instaMember))
-                .orElseGet(() -> create(username, "U")));
+                .orElseGet(() -> create(username, "U"));
     }
-
 
     @Transactional
     public RsData<InstaMember> findByUsernameOrCreate(String username, String gender) {
         Optional<InstaMember> opInstaMember = findByUsername(username);
 
-        // 찾았다면
         if (opInstaMember.isPresent()) {
             InstaMember instaMember = opInstaMember.get();
-            instaMember.updateGender(gender); // 성별세팅
-            instaMemberRepository.save(instaMember); // 저장
+            instaMember.updateGender(gender);
+            instaMemberRepository.save(instaMember);
 
-            // 기존 인스타회원이랑 연결
             return RsData.of("S-2", "인스타계정이 등록되었습니다.", instaMember);
         }
 
-        // 생성
         return create(username, gender);
     }
 
     private void saveSnapshot(InstaMemberSnapShot snapshot) {
-        instaMemberSnapshotRepository.save(snapshot);
+        InstaMemberSnapShotRepository.save(snapshot);
     }
 
     public void whenAfterModifyAttractiveType(LikeablePerson likeablePerson, int oldAttractiveTypeCode) {
-        InstaMember fromInstaMember = likeablePerson.getPushInstaMember();
-        InstaMember toInstaMember = likeablePerson.getPullInstaMember();
+        InstaMember pushInstaMember = likeablePerson.getPushInstaMember();
+        InstaMember pullInstaMember = likeablePerson.getPullInstaMember();
 
-        toInstaMember.decreaseLikesCount(fromInstaMember.getGender(), oldAttractiveTypeCode);
-        toInstaMember.increaseLikesCount(fromInstaMember.getGender(), likeablePerson.getAttractiveTypeCode());
+        pullInstaMember.decreaseLikesCount(pushInstaMember.getGender(), oldAttractiveTypeCode);
+        pullInstaMember.increaseLikesCount(pushInstaMember.getGender(), likeablePerson.getAttractiveTypeCode());
 
-        InstaMemberSnapShot snapshot = toInstaMember.snapshot("ModifyAttractiveType");
+        InstaMemberSnapShot snapshot = pullInstaMember.snapshot("ModifyAttractiveType");
 
         saveSnapshot(snapshot);
     }
 
     public void whenAfterLike(LikeablePerson likeablePerson) {
-        InstaMember fromInstaMember = likeablePerson.getPushInstaMember();
-        InstaMember toInstaMember = likeablePerson.getPullInstaMember();
+        InstaMember pushInstaMember = likeablePerson.getPushInstaMember();
+        InstaMember pullInstaMember = likeablePerson.getPullInstaMember();
 
-        toInstaMember.increaseLikesCount(fromInstaMember.getGender(), likeablePerson.getAttractiveTypeCode());
+        pullInstaMember.increaseLikesCount(pushInstaMember.getGender(), likeablePerson.getAttractiveTypeCode());
 
-        InstaMemberSnapShot snapshot = toInstaMember.snapshot("Like");
+        InstaMemberSnapShot snapshot = pullInstaMember.snapshot("Like");
 
         saveSnapshot(snapshot);
 
@@ -119,12 +107,12 @@ public class InstaMemberService {
     }
 
     public void whenBeforeCancelLike(LikeablePerson likeablePerson) {
-        InstaMember fromInstaMember = likeablePerson.getPushInstaMember();
-        InstaMember toInstaMember = likeablePerson.getPullInstaMember();
+        InstaMember pushInstaMember = likeablePerson.getPushInstaMember();
+        InstaMember pullInstaMember = likeablePerson.getPullInstaMember();
 
-        toInstaMember.decreaseLikesCount(fromInstaMember.getGender(), likeablePerson.getAttractiveTypeCode());
+        pullInstaMember.decreaseLikesCount(pushInstaMember.getGender(), likeablePerson.getAttractiveTypeCode());
 
-        InstaMemberSnapShot snapshot = toInstaMember.snapshot("CancelLike");
+        InstaMemberSnapShot snapshot = pullInstaMember.snapshot("CancelLike");
 
         saveSnapshot(snapshot);
     }
@@ -141,5 +129,37 @@ public class InstaMemberService {
 
                     saveSnapshot(snapshot);
                 });
+    }
+
+    public RsData<InstaMember> connect(Member member, String gender, String oauthId, String username, String accessToken) {
+        Optional<InstaMember> opInstaMember = instaMemberRepository.findByOauthId(oauthId);
+
+        if (opInstaMember.isPresent()) {
+            InstaMember instaMember = opInstaMember.get();
+            instaMember.connectMemberName(username, accessToken, gender);
+            instaMemberRepository.save(instaMember);
+
+            member.connectInstaMember(instaMember);
+
+            return RsData.of("S-3", "인스타계정이 연결되었습니다.", instaMember);
+        }
+
+        opInstaMember = findByUsername(username);
+
+        if (opInstaMember.isPresent()) {
+            InstaMember instaMember = opInstaMember.get();
+            instaMember.connectMemberOauthId(oauthId, accessToken, gender);
+            instaMemberRepository.save(instaMember);
+
+            member.connectInstaMember(instaMember);
+
+            return RsData.of("S-4", "인스타계정이 연결되었습니다.", instaMember);
+        }
+
+        InstaMember instaMember = connect(member, username, gender).getData();
+
+        instaMember.connect(oauthId, accessToken);
+
+        return RsData.of("S-5", "인스타계정이 연결되었습니다.", instaMember);
     }
 }

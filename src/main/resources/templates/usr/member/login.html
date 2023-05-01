@@ -1,4 +1,4 @@
-<html layout:decorate="~{usr/layout/layout.html}" lang="" xmlns:layout="http://www.w3.org/1999/xhtml">
+<html layout:decorate="~{usr/layout/layout.html}" xmlns:layout="">
 
 <head>
     <title>로그인</title>
@@ -11,28 +11,34 @@
         function LoginForm__submit(form) {
 
             form.username.value = form.username.value.trim();
+
             if (form.username.value.length === 0) {
                 toastWarning('아이디를 입력해주세요.');
                 form.username.focus();
                 return;
             }
+
             if (form.username.value.length < 4) {
                 toastWarning('아이디를 4자 이상 입력해주세요.');
                 form.username.focus();
                 return;
             }
+
             form.password.value = form.password.value.trim();
+
             if (form.password.value.length === 0) {
                 form.password.focus();
                 toastWarning('비밀번호를 입력해주세요.');
                 return;
             }
+
             if (form.password.value.length < 4) {
                 toastWarning('비밀번호를 4자 이상 입력해주세요.');
                 form.password.focus();
                 return;
             }
-            form.submit();
+
+            form.submit(); // 폼 발송
         }
     </script>
 
@@ -52,7 +58,7 @@
                         </span>
                     </label>
                     <label>
-                        <input type="text" name="username" placeholder="아이디" class="input input-bordered" autoFocus/>
+                        <input type="text" name="username" placeholder="아이디" class="input input-bordered" autofocus/>
                     </label>
                 </div>
 
@@ -69,7 +75,7 @@
                 </div>
 
                 <button id="btn-login-1" class="btn btn-block btn-primary gap-1">
-                    <i className="fa-solid fa-arrow-right-to-bracket"></i>
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
                     <span>로그인</span>
                 </button>
             </th:block>
@@ -89,6 +95,11 @@
                 <span>구글 아이디로 시작하기</span>
             </a>
 
+            <a href="/oauth2/authorization/facebook" class="btn btn-block btn-outline gap-1">
+                <i class="fa-brands fa-facebook text-[color:#3b5998]"></i>
+                <span>페이스북 아이디로 시작하기</span>
+            </a>
+
             <div class="flex flex-wrap justify-center">
                 <a href="/usr/home/about" class="btn btn-link">
                     <span>
@@ -101,5 +112,5 @@
     </div>
 </main>
 </body>
-
 </html>
+

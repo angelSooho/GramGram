@@ -13,8 +13,8 @@ import org.springframework.util.StringUtils;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
+@RequiredArgsConstructor
 public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
@@ -51,7 +51,7 @@ public class MemberService {
     }
 
     public void updateInstaMember(Member member, InstaMember instaMember) {
-        member.updateInstaMember(instaMember);
+        member.connectInstaMember(instaMember);
         memberRepository.save(member); // 여기서 실제로 UPDATE 쿼리 발생
     }
 

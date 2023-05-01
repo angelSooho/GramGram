@@ -58,7 +58,7 @@ public class Member extends BaseTimeEntity {
         return "%1$4s".formatted(Long.toString(getId(), 36)).replace(' ', '0');
     }
 
-    public void updateInstaMember(InstaMember instaMember) {
+    public void connectInstaMember(InstaMember instaMember) {
         this.instaMember = instaMember;
     }
 }

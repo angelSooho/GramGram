@@ -1,6 +1,6 @@
 package com.example.mission_leesooho.boundedContext.likeablePerson.service;
 
-import com.example.mission_leesooho.global.event.EventAfterModifyAT;
+import com.example.mission_leesooho.global.event.EventAfterModifyAttractiveType;
 import com.example.mission_leesooho.global.rsData.RsData;
 import com.example.mission_leesooho.boundedContext.instaMember.entity.InstaMember;
 import com.example.mission_leesooho.boundedContext.instaMember.repository.InstaMemberRepository;
@@ -58,11 +58,9 @@ public class LikeablePersonService {
 
         LikeablePerson likeablePerson = LikeablePerson
                 .builder()
-                .pushInstaMember(member.getInstaMember()) // 호감을 표시하는 사람의 인스타 멤버
-//                .fromInstaMemberUsername(member.getInstaMember().getUsername()) // 중요하지 않음
-                .pullInstaMember(pullInstaMember) // 호감을 받는 사람의 인스타 멤버
-//                .toInstaMemberUsername(toInstaMember.getUsername()) // 중요하지 않음
-                .attractiveTypeCode(attractiveTypeCode) // 1=외모, 2=능력, 3=성격
+                .pushInstaMember(member.getInstaMember())
+                .pullInstaMember(pullInstaMember)
+                .attractiveTypeCode(attractiveTypeCode)
                 .build();
 
         return CreateOrModifyLikeablePerson(member, username, pullInstaMember, likeablePerson);
@@ -74,14 +72,12 @@ public class LikeablePersonService {
 
         String info = SameAttractiveTypeCodeSearch(likeablePerson);
 
-        // 분할 필요함
         switch (info) {
             case "error" -> {
                 log.error("make, modify error");
                 return RsData.of("F-4", "동일한 옵션의 호감유저를 추가할 수 없습니다.");
             }
             case "modify" -> {
-
                 return RsData.of("S-2", "입력하신 인스타유저(%s)의 호감옵션을 변경하였습니다.".formatted(username), likeResponse);
             }
             case "new" ->  {
@@ -98,8 +94,6 @@ public class LikeablePersonService {
     public RsData<LikeablePersonResponse> cancel(Member member, Long id) {
 
         LikeablePerson likeablePerson = likeablePersonRepository.findById(id).orElseThrow();
-
-        log.info("time = {} {}", LocalDateTime.now(), likeablePerson.getCreateDate());
 
         if (!member.getInstaMember().getId().equals(likeablePerson.getPushInstaMember().getId())) {
             log.error("delete fail");
@@ -161,7 +155,6 @@ public class LikeablePersonService {
             return RsData.of("F-2", "해당 호감표시를 취소할 권한이 없습니다.");
         }
 
-
         return RsData.of("S-1", "호감표시를 수정합니다.", modifyLikeablePerson);
     }
 
@@ -188,7 +181,7 @@ public class LikeablePersonService {
         RsData rsData = likeablePerson.modifyATWithRsData(attractiveTypeCode);
 
         if (rsData.isSuccess()) {
-            publisher.publishEvent(new EventAfterModifyAT(this, likeablePerson, oldAttractiveTypeCode, attractiveTypeCode));
+            publisher.publishEvent(new EventAfterModifyAttractiveType(this, likeablePerson, oldAttractiveTypeCode, attractiveTypeCode));
         }
     }
 }

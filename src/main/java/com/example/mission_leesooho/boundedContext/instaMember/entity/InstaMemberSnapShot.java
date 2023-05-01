@@ -10,12 +10,9 @@ import lombok.experimental.SuperBuilder;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SuperBuilder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class InstaMemberSnapShot extends InstaMemberBase {
-
-    @Id
-    private Long id;
 
     private String eventTypeCode;
     private String username;

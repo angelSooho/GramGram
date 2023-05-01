@@ -23,8 +23,10 @@ public class InstaMember extends InstaMemberBase {
     @Column(unique = true, nullable = false)
     private String username;
 
-    @Column(nullable = false)
-    private String gender;
+    @Column(unique = true)
+    private String oauthId;
+
+    private String accessToken;
 
     @OneToMany(mappedBy = "pushInstaMember", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY) // 내가 호감을 누른
     @LazyCollection(LazyCollectionOption.EXTRA)
@@ -58,6 +60,23 @@ public class InstaMember extends InstaMemberBase {
             case "W" -> "여성";
             default -> "남성";
         };
+    }
+
+    public void connectMemberName(String username, String accessToken, String gender) {
+        this.username = username;
+        this.accessToken = accessToken;
+        this.gender = gender;
+    }
+
+    public void connectMemberOauthId(String oauthId, String accessToken, String gender) {
+        this.oauthId = oauthId;
+        this.accessToken = accessToken;
+        this.gender = gender;
+    }
+
+    public void connect(String oauthId, String accessToken) {
+        this.oauthId = oauthId;
+        this.accessToken = accessToken;
     }
 
     public String getGenderDisplayNameWithIcon() {

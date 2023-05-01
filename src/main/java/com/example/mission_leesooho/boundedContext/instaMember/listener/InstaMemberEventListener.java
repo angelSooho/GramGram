@@ -1,9 +1,9 @@
 package com.example.mission_leesooho.boundedContext.instaMember.listener;
 
 import com.example.mission_leesooho.boundedContext.instaMember.service.InstaMemberService;
+import com.example.mission_leesooho.global.event.EventAfterFromInstaMemberChangeGender;
 import com.example.mission_leesooho.global.event.EventAfterLike;
-import com.example.mission_leesooho.global.event.EventAfterModifyAT;
-import com.example.mission_leesooho.global.event.EventAfterModifyPIGender;
+import com.example.mission_leesooho.global.event.EventAfterModifyAttractiveType;
 import com.example.mission_leesooho.global.event.EventBeforeCancelLike;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
@@ -13,12 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 public class InstaMemberEventListener {
-
     private final InstaMemberService instaMemberService;
 
     @EventListener
     @Transactional
-    public void listen(EventAfterModifyAT event) {
+    public void listen(EventAfterModifyAttractiveType event) {
         instaMemberService.whenAfterModifyAttractiveType(event.getLikeablePerson(), event.getOldAttractiveTypeCode());
     }
 
@@ -33,7 +32,7 @@ public class InstaMemberEventListener {
     }
 
     @EventListener
-    public void listen(EventAfterModifyPIGender event) {
+    public void listen(EventAfterFromInstaMemberChangeGender event) {
         instaMemberService.whenAfterFromInstaMemberChangeGender(event.getInstaMember(), event.getOldGender());
     }
 }

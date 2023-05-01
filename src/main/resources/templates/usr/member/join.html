@@ -1,4 +1,4 @@
-<html layout:decorate="~{usr/layout/layout.html}">
+<html layout:decorate="~{usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
 
 <head>
     <title>회원가입</title>
@@ -9,9 +9,8 @@
 <main layout:fragment="main" class="flex-grow flex items-center justify-center">
     <script>
         function JoinForm__submit(form) {
-            // username 이(가) 올바른지 체크
 
-            form.username.value = form.username.value.trim(); // 입력란의 입력값에 있을지 모르는 좌우공백제거
+            form.username.value = form.username.value.trim();
 
             if (form.username.value.length === 0) {
                 toastWarning('아이디를 입력해주세요.');
@@ -25,9 +24,7 @@
                 return;
             }
 
-            // password 이(가) 올바른지 체크
-
-            form.password.value = form.password.value.trim(); // 입력란의 입력값에 있을지 모르는 좌우공백제거
+            form.password.value = form.password.value.trim(); 
 
             if (form.password.value.length === 0) {
                 form.password.focus();
@@ -65,21 +62,28 @@
                     <label class="label">
                         <span class="label-text">아이디</span>
                     </label>
-                    <input type="text" name="username" placeholder="아이디" class="input input-bordered" autofocus/>
+                    <label>
+                        <input type="text" name="username" placeholder="아이디" class="input input-bordered" autoFocus/>
+                    </label>
                 </div>
 
                 <div class="form-control">
                     <label class="label">
                         <span class="label-text">비빌번호</span>
                     </label>
-                    <input type="password" name="password" placeholder="비빌번호" class="input input-bordered"/>
+                    <label>
+                        <input type="password" name="password" placeholder="비빌번호" class="input input-bordered"/>
+                    </label>
                 </div>
 
                 <div class="form-control">
                     <label class="label">
                         <span class="label-text">비빌번호 확인</span>
                     </label>
-                    <input type="password" name="passwordConfirm" placeholder="비빌번호 확인" class="input input-bordered"/>
+                    <label>
+                        <input type="password" name="passwordConfirm" placeholder="비빌번호 확인"
+                               class="input input-bordered"/>
+                    </label>
                 </div>
 
                 <button id="btn-join-1" class="btn btn-block btn-primary gap-1">
@@ -115,3 +119,4 @@
 </body>
 
 </html>
+
