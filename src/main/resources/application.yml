@@ -33,4 +33,4 @@ logging:
     org.hibernate.orm.jdbc.extract: TRACE
 likeable-person:
   lst-max: 10
-  time-limit: '#{60 * 60 * 3}'
+  time-limit: '#{60*60*3}'
