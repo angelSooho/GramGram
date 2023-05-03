@@ -63,7 +63,7 @@
             <a href="/usr/member/pop" class="btn btn-ghost gap-1" th:if="${@rq.login}">
                 <i class="fa-solid fa-chart-line"></i>
             </a>
-            <a href="/usr/notification/list" class="btn btn-ghost btn-circle" th:if="${@rq.login}">
+            <a href="/usr/notification/list?page=0" class="btn btn-ghost btn-circle" th:if="${@rq.login}">
                 <div class="indicator">
                     <i class="fa-regular fa-bell"></i>
                     <span th:if="${@rq.login}" class="badge badge-xs badge-primary indicator-item"></span>
