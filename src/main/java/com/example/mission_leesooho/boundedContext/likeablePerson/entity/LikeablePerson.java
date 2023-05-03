@@ -5,12 +5,13 @@ import com.example.mission_leesooho.boundedContext.instaMember.entity.InstaMembe
 import com.example.mission_leesooho.global.rsData.RsData;
 import com.example.mission_leesooho.standard.util.Ut;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
+import java.util.Objects;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
@@ -37,11 +38,12 @@ public class LikeablePerson extends BaseTimeEntity {
     private LocalDateTime modifyUnlockDate;
 
     public boolean isModifyUnlocked() {
-        return modifyUnlockDate.isBefore(LocalDateTime.now());
+        return modifyUnlockDate.withNano(0).isBefore(LocalDateTime.now().withNano(0)) ||
+                Objects.equals(this.modifyUnlockDate.withNano(0), LocalDateTime.now().withNano(0));
     }
 
     public String getModifyUnlockDateRemainStrHuman() {
-        return modifyUnlockDate.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.LONG));
+        return this.modifyUnlockDate.getHour() + "시 " + this.modifyUnlockDate.getMinute() + "분";
     }
 
     public String getAttractiveTypeDisplayName() {
@@ -52,8 +54,13 @@ public class LikeablePerson extends BaseTimeEntity {
         };
     }
 
-    public void modifyAttractiveTypeCode(Integer attractiveTypeCode) {
+    public void modifyUnlockDate(Long time) {
+        this.modifyUnlockDate = LocalDateTime.now().plusSeconds(time);
+    }
+
+    public void modifyAttractiveTypeCode(Integer attractiveTypeCode, Long time) {
         this.attractiveTypeCode = attractiveTypeCode;
+        modifyUnlockDate(time);
     }
 
     public RsData modifyATWithRsData(Integer attractiveTypeCode) {

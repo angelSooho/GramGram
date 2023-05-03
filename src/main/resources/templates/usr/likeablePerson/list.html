@@ -12,14 +12,12 @@
 
         <th:block th:if="${@rq.member.hasConnectedInstaMember}">
             <div th:unless="${!#lists.isEmpty(likeablePeople)}" class="text-center">
-                <div><i class="fa-regular fa-face-laugh"></i> 목록이 비어있습니다. 새로운 호감을 표시하세요.</div>
+                <div><i class="fa-regular fa-face-laugh"></i> 목록이 비어있습니다. 호감을 표시하세요.</div>
             </div>
-
             <h1 class="mb-4" th:if="${!#lists.isEmpty(likeablePeople)}">
                 <i class="fa-solid fa-list-ol"></i>
                 호감목록
             </h1>
-
             <ul th:if="${!#lists.isEmpty(likeablePeople)}" class="flex flex-col gap-4">
                 <li th:each="likeablePerson: ${likeablePeople}">
                     <div class="card bg-base-100 shadow-xl">
@@ -66,8 +64,9 @@
                             </div>
 
                             <div class="card-actions justify-center">
-                                <a th:href="@{|modify/${likeablePerson.id}|}" class="btn btn-sm btn-outline"
-                                   th:classappend="${!likeablePerson.modifyUnlocked ? 'btn-disabled' : ''}">
+                                <a th:href="@{|modify/${likeablePerson.id}|}" onclick="return confirm('수정하시겠습니까?')"
+                                   th:classappend="${!likeablePerson.modifyUnlocked ? 'btn-disabled' : ''}"
+                                   class="btn btn-sm btn-outline">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                     &nbsp;
                                     호감사유 변경
@@ -80,7 +79,7 @@
                                     &nbsp;
                                     호감취소
                                 </a>
-                                <form hidden th:action="@{|/usr/likeablePerson/${likeablePerson.id}|}" method="POST">
+                                <form hidden th:action="@{|/usr/likeablePerson/delete/${likeablePerson.id}|}" method="POST">
                                     <input type="hidden" name="_method" value="delete">
                                 </form>
                             </div>
@@ -98,7 +97,7 @@
         </th:block>
 
         <div class="text-center mt-4">
-            <a th:if="${@rq.member.hasConnectedInstaMember}" href="/list" class="btn btn-link">
+            <a th:if="${@rq.member.hasConnectedInstaMember}" href="list" class="btn btn-link">
                 <span>
                     <i class="fa-solid fa-list-ol mr-1"></i>
                     호감목록&nbsp;
