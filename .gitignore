@@ -42,4 +42,7 @@ src/main/resources/application-secret.yml
 ### Q Files ###
 /src/main/generated/
 
+### key Files ###
+/keystore.p12
+
 
