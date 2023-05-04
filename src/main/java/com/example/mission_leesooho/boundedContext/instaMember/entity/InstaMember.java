@@ -1,6 +1,5 @@
 package com.example.mission_leesooho.boundedContext.instaMember.entity;
 
-import com.example.mission_leesooho.boundedContext.base.BaseTimeEntity;
 import com.example.mission_leesooho.boundedContext.likeablePerson.entity.LikeablePerson;
 import jakarta.persistence.*;
 import lombok.*;

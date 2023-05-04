@@ -1,6 +1,5 @@
 package com.example.mission_leesooho.boundedContext.member.controller;
 
-import com.example.mission_leesooho.boundedContext.member.service.MemberService;
 import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;

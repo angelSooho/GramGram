@@ -4,6 +4,7 @@ import com.example.mission_leesooho.boundedContext.instaMember.entity.InstaMembe
 import com.example.mission_leesooho.boundedContext.instaMember.service.InstaMemberService;
 import com.example.mission_leesooho.boundedContext.member.entity.Member;
 import com.example.mission_leesooho.boundedContext.member.service.MemberService;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -104,7 +104,7 @@ public class InstaMemberControllerTests {
 
         Member member = memberService.findByUsername("user1").orElseThrow();
 
-        assertThat(member.getInstaMember()).isEqualTo(instaMember);
+        Assertions.assertThat(member.getInstaMember()).isEqualTo(instaMember);
     }
 
     @Test
@@ -129,10 +129,10 @@ public class InstaMemberControllerTests {
 
         InstaMember instaMember = instaMemberService.findByUsername("insta_user100").orElse(null);
 
-        assertThat(instaMember.getGender()).isEqualTo("M");
+        Assertions.assertThat(instaMember.getGender()).isEqualTo("M");
 
         Member member = memberService.findByUsername("user1").orElseThrow();
 
-        assertThat(member.getInstaMember()).isEqualTo(instaMember);
+        Assertions.assertThat(member.getInstaMember()).isEqualTo(instaMember);
     }
 }

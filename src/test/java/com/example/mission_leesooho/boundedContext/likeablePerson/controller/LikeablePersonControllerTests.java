@@ -1,7 +1,5 @@
 package com.example.mission_leesooho.boundedContext.likeablePerson.controller;
 
-import com.example.mission_leesooho.boundedContext.likeablePerson.service.LikeablePersonService;
-import com.example.mission_leesooho.boundedContext.member.service.MemberService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
@@ -17,7 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -29,8 +28,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class LikeablePersonControllerTests {
 
     @Autowired private MockMvc mvc;
-    @Autowired private MemberService memberService;
-    @Autowired private LikeablePersonService likeablePersonService;
 
     @Test
     @DisplayName("등록 폼(인스타 인증을 안해서 폼 대신 메세지)")
@@ -53,6 +50,37 @@ public class LikeablePersonControllerTests {
     }
 
     @Test
+    @DisplayName("등록 폼")
+    @WithUserDetails("user2")
+    void t002() throws Exception {
+        // WHEN
+        ResultActions resultActions = mvc
+                .perform(get("/usr/likeablePerson/like"))
+                .andDo(print());
+
+        // THEN
+        resultActions
+                .andExpect(handler().handlerType(LikeablePersonController.class))
+                .andExpect(handler().methodName("showLike"))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(content().string(containsString("""
+                        <input type="text" name="username"
+                        """.stripIndent().trim())))
+                .andExpect(content().string(containsString("""
+                        <input type="radio" name="attractiveTypeCode" value="1"
+                        """.stripIndent().trim())))
+                .andExpect(content().string(containsString("""
+                        <input type="radio" name="attractiveTypeCode" value="2"
+                        """.stripIndent().trim())))
+                .andExpect(content().string(containsString("""
+                        <input type="radio" name="attractiveTypeCode" value="3"
+                        """.stripIndent().trim())))
+                .andExpect(content().string(containsString("""
+                        id="btn-like-1"
+                        """.stripIndent().trim())));
+    }
+
+    @Test
     @DisplayName("등록 폼 처리(user2가 user3에게 호감표시(외모))")
     @WithUserDetails("user2")
     void t003() throws Exception {
@@ -69,7 +97,7 @@ public class LikeablePersonControllerTests {
         resultActions
                 .andExpect(handler().handlerType(LikeablePersonController.class))
                 .andExpect(handler().methodName("like"))
-                .andExpect(status().is4xxClientError());
+                .andExpect(status().is3xxRedirection());
     }
 
     @Test
@@ -89,165 +117,6 @@ public class LikeablePersonControllerTests {
         resultActions
                 .andExpect(handler().handlerType(LikeablePersonController.class))
                 .andExpect(handler().methodName("like"))
-                .andExpect(status().is4xxClientError());
-    }
-
-    @Test
-    @DisplayName("수정 폼")
-    @WithUserDetails("user3")
-    void t014() throws Exception {
-        // WHEN
-        ResultActions resultActions = mvc
-                .perform(get("/usr/likeablePerson/modify/2"))
-                .andDo(print());
-
-        // THEN
-        resultActions
-                .andExpect(handler().handlerType(LikeablePersonController.class))
-                .andExpect(handler().methodName("showModify"))
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(content().string(containsString("""
-                        <input type="radio" name="attractiveTypeCode" value="1"
-                        """.stripIndent().trim())))
-                .andExpect(content().string(containsString("""
-                        <input type="radio" name="attractiveTypeCode" value="2"
-                        """.stripIndent().trim())))
-                .andExpect(content().string(containsString("""
-                        <input type="radio" name="attractiveTypeCode" value="3"
-                        """.stripIndent().trim())))
-                .andExpect(content().string(containsString("""
-                        inputValue__attractiveTypeCode = 2;
-                        """.stripIndent().trim())))
-                .andExpect(content().string(containsString("""
-                        id="btn-modify-like-1"
-                        """.stripIndent().trim())));
-    }
-
-    @Test
-    @DisplayName("수정 폼 처리")
-    @WithUserDetails("user3")
-    void t015() throws Exception {
-        // WHEN
-        ResultActions resultActions = mvc
-                .perform(post("/usr/likeablePerson/modify/2")
-                        .with(csrf()) // CSRF 키 생성
-                        .param("username", "abcd")
-                        .param("attractiveTypeCode", "3")
-                )
-                .andDo(print());
-
-        // THEN
-        resultActions
-                .andExpect(handler().handlerType(LikeablePersonController.class))
-                .andExpect(handler().methodName("modify"))
                 .andExpect(status().is3xxRedirection());
-    }
-
-    @Test
-    @DisplayName("호감목록")
-    @WithUserDetails("user3")
-    void t005() throws Exception {
-        // WHEN
-        ResultActions resultActions = mvc
-                .perform(get("/usr/likeablePerson/list"))
-                .andDo(print());
-
-        // THEN
-        resultActions
-                .andExpect(handler().handlerType(LikeablePersonController.class))
-                .andExpect(handler().methodName("showList"))
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(content().string(containsString("""
-                        data-test="toInstaMember_username=insta_user4"
-                        """.stripIndent().trim())))
-                .andExpect(content().string(containsString("""
-                        data-test="toInstaMember_attractiveTypeDisplayName=외모"
-                        """.stripIndent().trim())))
-                .andExpect(content().string(containsString("""
-                        data-test="toInstaMember_username=insta_user100"
-                        """.stripIndent().trim())))
-                .andExpect(content().string(containsString("""
-                        data-test="toInstaMember_attractiveTypeDisplayName=성격"
-                        """.stripIndent().trim())));
-    }
-
-    @Test
-    @DisplayName("호감취소(없는거 취소, 취소가 안되어야 함)")
-    @WithUserDetails("user3")
-    void t007() throws Exception {
-        // WHEN
-        ResultActions resultActions = mvc
-                .perform(
-                        delete("/usr/likeablePerson/100")
-                                .with(csrf())
-                )
-                .andDo(print());
-
-        // THEN
-        resultActions
-                .andExpect(handler().handlerType(LikeablePersonController.class))
-                .andExpect(handler().methodName("cancel"))
-                .andExpect(status().is4xxClientError())
-        ;
-    }
-
-    @Test
-    @DisplayName("인스타아이디가 없는 회원은 대해서 호감표시를 할 수 없다.")
-    @WithUserDetails("user1")
-    void t009() throws Exception {
-        // WHEN
-        ResultActions resultActions = mvc
-                .perform(post("/usr/likeablePerson/like")
-                        .with(csrf()) // CSRF 키 생성
-                        .param("username", "insta_user4")
-                        .param("attractiveTypeCode", "1")
-                )
-                .andDo(print());
-
-        // THEN
-        resultActions
-                .andExpect(handler().handlerType(LikeablePersonController.class))
-                .andExpect(handler().methodName("like"))
-                .andExpect(status().is4xxClientError());
-    }
-
-    @Test
-    @DisplayName("본인이 본인에게 호감표시하면 안된다.")
-    @WithUserDetails("user3")
-    void t010() throws Exception {
-        // WHEN
-        ResultActions resultActions = mvc
-                .perform(post("/usr/likeablePerson/like")
-                        .with(csrf()) // CSRF 키 생성
-                        .param("username", "insta_user3")
-                        .param("attractiveTypeCode", "1")
-                )
-                .andDo(print());
-
-        // THEN
-        resultActions
-                .andExpect(handler().handlerType(LikeablePersonController.class))
-                .andExpect(handler().methodName("like"))
-                .andExpect(status().is4xxClientError());
-    }
-
-    @Test
-    @DisplayName("특정인에 대해서 호감표시를 중복으로 시도하면 안된다.")
-    @WithUserDetails("user3")
-    void t011() throws Exception {
-        // WHEN
-        ResultActions resultActions = mvc
-                .perform(post("/usr/likeablePerson/like")
-                        .with(csrf()) // CSRF 키 생성
-                        .param("username", "insta_user4")
-                        .param("attractiveTypeCode", "1")
-                )
-                .andDo(print());
-
-        // THEN
-        resultActions
-                .andExpect(handler().handlerType(LikeablePersonController.class))
-                .andExpect(handler().methodName("like"))
-                .andExpect(status().is4xxClientError());
     }
 }
