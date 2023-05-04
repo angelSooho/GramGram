@@ -107,7 +107,7 @@ public class LikeablePersonService {
                 return RsData.of("S-1", "입력하신 인스타유저(%s)를 호감상대로 등록되었습니다.".formatted(username), likeResponse);
             }
             default -> {
-                return RsData.of("F-3", "수정은 %s부터 가능합니다.".formatted(info));
+                return RsData.of("F-3", "수정 가능시간까지 %s 남았습니다.".formatted(info));
             }
         }
     }
@@ -152,7 +152,7 @@ public class LikeablePersonService {
         LikeablePerson likeablePerson = likeablePersonRepository.findById(id).orElseThrow();
 
         if (!likeablePerson.isModifyUnlocked()) {
-            return RsData.of("F-3", "삭제는 %s부터 가능합니다.".formatted(likeablePerson.getModifyUnlockDateRemainStrHuman()));
+            return RsData.of("F-3", "삭제 가능시간까지 %s 남았습니다.".formatted(likeablePerson.getModifyUnlockDateRemainStrHuman()));
         }
         if (!member.getInstaMember().getId().equals(likeablePerson.getPushInstaMember().getId())) {
             log.error("delete fail");
@@ -195,7 +195,7 @@ public class LikeablePersonService {
             return RsData.of("F-2", "해당 호감표시를 취소할 권한이 없습니다.");
         }
         if (!modifyLikeablePerson.isModifyUnlocked()) {
-            return RsData.of("F-3", "수정은 %s부터 가능합니다.".formatted(modifyLikeablePerson.getModifyUnlockDateRemainStrHuman()));
+            return RsData.of("F-3", "수정 가능시간까지 %s 남았습니다.".formatted(modifyLikeablePerson.getModifyUnlockDateRemainStrHuman()));
         }
 
         return RsData.of("S-1", "호감표시를 수정합니다.", modifyLikeablePerson);
@@ -212,8 +212,7 @@ public class LikeablePersonService {
         String oldAttractiveTypeDisplayName = likeablePerson.get().getAttractiveTypeDisplayName();
         String username = likeablePerson.get().getPullInstaMember().getUsername();
 
-        modifyAttractionTypeCode(likeablePerson.get(), attractiveTypeCode);
-        likeablePerson.get().modifyUnlockDate(time_limit);
+        modifyAttractionTypeCode(likeablePerson.get(), attractiveTypeCode, time_limit);
         log.info("time = {} {}", LocalDateTime.now(), likeablePerson.get().getModifyUnlockDate());
 
         Notification notifiCation = Notification
@@ -301,9 +300,9 @@ public class LikeablePersonService {
         notificationRepository.save(notifiCation3);
     }
 
-    private void modifyAttractionTypeCode(LikeablePerson likeablePerson, int attractiveTypeCode) {
+    private void modifyAttractionTypeCode(LikeablePerson likeablePerson, int attractiveTypeCode, Long time) {
         int oldAttractiveTypeCode = likeablePerson.getAttractiveTypeCode();
-        RsData rsData = likeablePerson.modifyATWithRsData(attractiveTypeCode);
+        RsData rsData = likeablePerson.modifyATWithRsData(attractiveTypeCode, time);
 
         if (rsData.isSuccess()) {
             publisher.publishEvent(new EventAfterModifyAttractiveType(this, likeablePerson, oldAttractiveTypeCode, attractiveTypeCode));

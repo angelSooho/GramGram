@@ -9,13 +9,16 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.slf4j.Slf4j;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 
+@Slf4j
 @Entity
 @Getter
 @SuperBuilder
@@ -43,7 +46,34 @@ public class LikeablePerson extends BaseTimeEntity {
     }
 
     public String getModifyUnlockDateRemainStrHuman() {
-        return this.modifyUnlockDate.getHour() + "시 " + this.modifyUnlockDate.getMinute() + "분";
+        return remainTime();
+    }
+    private String remainTime() {
+
+        Duration remain = Duration.between(LocalDateTime.now(), this.getModifyUnlockDate());
+
+        long hour = remain.toHours();
+        long min = remain.toMinutes() % 60;
+
+        if (remain.toSeconds() % 60 > 0) {
+            min += 1;
+        }
+        if (min == 60) {
+            hour += 1;
+            min = 0;
+        }
+
+        if (hour == 0) {
+            if (min < 10) {
+                return "0" + min + "분";
+            } else {
+                return min + "분";
+            }
+        } else if (min < 10) {
+            return hour + "시간0" + min + "분";
+        } else {
+            return hour + "시간" + min + "분";
+        }
     }
 
     public String getAttractiveTypeDisplayName() {
@@ -54,7 +84,7 @@ public class LikeablePerson extends BaseTimeEntity {
         };
     }
 
-    public void modifyUnlockDate(Long time) {
+    private void modifyUnlockDate(Long time) {
         this.modifyUnlockDate = LocalDateTime.now().plusSeconds(time);
     }
 
@@ -63,11 +93,12 @@ public class LikeablePerson extends BaseTimeEntity {
         modifyUnlockDate(time);
     }
 
-    public RsData modifyATWithRsData(Integer attractiveTypeCode) {
+    public RsData modifyATWithRsData(Integer attractiveTypeCode, Long time) {
         if (this.attractiveTypeCode == attractiveTypeCode) {
             return RsData.of("F-1", "이미 설정되었습니다.");
         }
         this.attractiveTypeCode = attractiveTypeCode;
+        modifyUnlockDate(time);
 
         return RsData.of("S-1", "성공");
     }
