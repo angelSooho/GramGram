@@ -5,16 +5,20 @@ import com.example.mission_leesooho.boundedContext.instaMember.entity.InstaMembe
 import com.example.mission_leesooho.global.rsData.RsData;
 import com.example.mission_leesooho.standard.util.Ut;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.slf4j.Slf4j;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
+import java.util.Objects;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 
+@Slf4j
 @Entity
 @Getter
 @SuperBuilder
@@ -37,11 +41,39 @@ public class LikeablePerson extends BaseTimeEntity {
     private LocalDateTime modifyUnlockDate;
 
     public boolean isModifyUnlocked() {
-        return modifyUnlockDate.isBefore(LocalDateTime.now());
+        return modifyUnlockDate.withNano(0).isBefore(LocalDateTime.now().withNano(0)) ||
+                Objects.equals(this.modifyUnlockDate.withNano(0), LocalDateTime.now().withNano(0));
     }
 
     public String getModifyUnlockDateRemainStrHuman() {
-        return modifyUnlockDate.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.LONG));
+        return remainTime();
+    }
+    private String remainTime() {
+
+        Duration remain = Duration.between(LocalDateTime.now(), this.getModifyUnlockDate());
+
+        long hour = remain.toHours();
+        long min = remain.toMinutes() % 60;
+
+        if (remain.toSeconds() % 60 > 0) {
+            min += 1;
+        }
+        if (min == 60) {
+            hour += 1;
+            min = 0;
+        }
+
+        if (hour == 0) {
+            if (min < 10) {
+                return "0" + min + "분";
+            } else {
+                return min + "분";
+            }
+        } else if (min < 10) {
+            return hour + "시간0" + min + "분";
+        } else {
+            return hour + "시간" + min + "분";
+        }
     }
 
     public String getAttractiveTypeDisplayName() {
@@ -52,15 +84,21 @@ public class LikeablePerson extends BaseTimeEntity {
         };
     }
 
-    public void modifyAttractiveTypeCode(Integer attractiveTypeCode) {
-        this.attractiveTypeCode = attractiveTypeCode;
+    private void modifyUnlockDate(Long time) {
+        this.modifyUnlockDate = LocalDateTime.now().plusSeconds(time);
     }
 
-    public RsData modifyATWithRsData(Integer attractiveTypeCode) {
+    public void modifyAttractiveTypeCode(Integer attractiveTypeCode, Long time) {
+        this.attractiveTypeCode = attractiveTypeCode;
+        modifyUnlockDate(time);
+    }
+
+    public RsData modifyATWithRsData(Integer attractiveTypeCode, Long time) {
         if (this.attractiveTypeCode == attractiveTypeCode) {
             return RsData.of("F-1", "이미 설정되었습니다.");
         }
         this.attractiveTypeCode = attractiveTypeCode;
+        modifyUnlockDate(time);
 
         return RsData.of("S-1", "성공");
     }

@@ -1,19 +1,15 @@
 package com.example.mission_leesooho.global.initData;
 
 import com.example.mission_leesooho.boundedContext.instaMember.service.InstaMemberService;
-import com.example.mission_leesooho.boundedContext.likeablePerson.dto.response.LikeablePersonResponse;
 import com.example.mission_leesooho.boundedContext.likeablePerson.service.LikeablePersonService;
 import com.example.mission_leesooho.boundedContext.member.entity.Member;
 import com.example.mission_leesooho.boundedContext.member.service.MemberService;
-import com.example.mission_leesooho.standard.util.Ut;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 @Configuration
 @Profile({"dev", "test"})
@@ -65,10 +61,10 @@ public class NotProd {
                 instaMemberService.connect(memberUser5, "insta_user5", "W");
 
                 // 원활한 테스트와 개발을 위해서 자동으로 만들어지는 호감이 삭제, 수정이 가능하도록 쿨타임해제
-                LikeablePersonResponse likeablePersonToinstaUser4 = likeablePersonService.like(memberUser3, "insta_user4", 1).getData();
-                Ut.reflection.setFieldValue(likeablePersonToinstaUser4, "modifyUnlockDate", LocalDateTime.now().minusSeconds(1));
-                LikeablePersonResponse likeablePersonToinstaUser100 = likeablePersonService.like(memberUser3, "insta_user100", 2).getData();
-                Ut.reflection.setFieldValue(likeablePersonToinstaUser100, "modifyUnlockDate", LocalDateTime.now().minusSeconds(1));
+//                LikeablePersonResponse likeablePersonToinstaUser4 = likeablePersonService.like(memberUser3, "insta_user4", 1).getData();
+//                Ut.reflection.setFieldValue(likeablePersonToinstaUser4, "modifyUnlockDate", LocalDateTime.now().minusSeconds(1));
+//                LikeablePersonResponse likeablePersonToinstaUser100 = likeablePersonService.like(memberUser3, "insta_user100", 2).getData();
+//                Ut.reflection.setFieldValue(likeablePersonToinstaUser100, "modifyUnlockDate", LocalDateTime.now().minusSeconds(1));
             }
         };
     }

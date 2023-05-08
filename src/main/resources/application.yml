@@ -13,10 +13,15 @@ spring:
 #    username: sa
 #    password:
 #      mysql
-    url: jdbc:mysql://127.0.0.1:3306/gram__dev?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul
-    username: lsh
+#    url: jdbc:mysql://127.0.0.1:3306/gram__dev?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul
+#    username: lsh
+#    password:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+  # mariaDB
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://127.0.0.1:3306/gram__dev?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul
+    username: root
     password:
-    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: create
@@ -33,4 +38,4 @@ logging:
     org.hibernate.orm.jdbc.extract: TRACE
 likeable-person:
   lst-max: 10
-  time-limit: '#{60 * 60 * 3}'
+  time-limit: '#{60*60*3}'

@@ -1,12 +1,15 @@
 package com.example.mission_leesooho.global.rq;
 
-import com.example.mission_leesooho.global.rsData.RsData;
 import com.example.mission_leesooho.boundedContext.member.entity.Member;
 import com.example.mission_leesooho.boundedContext.member.service.MemberService;
+import com.example.mission_leesooho.boundedContext.notification.entity.Notification;
+import com.example.mission_leesooho.boundedContext.notification.service.NotificationService;
+import com.example.mission_leesooho.global.rsData.RsData;
 import com.example.mission_leesooho.standard.util.Ut;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -25,12 +28,14 @@ public class Rq {
     private final HttpSession session;
     private final User user;
     private Member member = null; // 레이지 로딩, 처음부터 넣지 않고, 요청이 들어올 때 넣는다.
+    private final NotificationService notificationService;
 
-    public Rq(MemberService memberService, HttpServletRequest req, HttpServletResponse resp, HttpSession session) {
+    public Rq(MemberService memberService, HttpServletRequest req, HttpServletResponse resp, HttpSession session, NotificationService notificationService) {
         this.memberService = memberService;
         this.req = req;
         this.resp = resp;
         this.session = session;
+        this.notificationService = notificationService;
 
         // 현재 로그인한 회원의 인증정보를 가져옴
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -126,6 +131,11 @@ public class Rq {
         }
 
         return defaultValue;
+    }
+
+    public boolean hasNotification() {
+        Page<Notification> myNotification = notificationService.findMyNotification(getMember().getInstaMember(), 0);
+        return !myNotification.isEmpty();
     }
 
     public void removeSessionAttr(String name) {
