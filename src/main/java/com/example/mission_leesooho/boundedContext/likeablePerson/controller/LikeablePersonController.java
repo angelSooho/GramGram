@@ -2,15 +2,12 @@ package com.example.mission_leesooho.boundedContext.likeablePerson.controller;
 
 import com.example.mission_leesooho.boundedContext.likeablePerson.dto.form.AddForm;
 import com.example.mission_leesooho.boundedContext.likeablePerson.dto.form.ModifyForm;
+import com.example.mission_leesooho.boundedContext.likeablePerson.dto.response.LikeablePersonResponse;
 import com.example.mission_leesooho.boundedContext.likeablePerson.entity.LikeablePerson;
+import com.example.mission_leesooho.boundedContext.likeablePerson.service.LikeablePersonService;
 import com.example.mission_leesooho.global.rq.Rq;
 import com.example.mission_leesooho.global.rsData.RsData;
-import com.example.mission_leesooho.boundedContext.likeablePerson.dto.response.LikeablePersonResponse;
-import com.example.mission_leesooho.boundedContext.likeablePerson.service.LikeablePersonService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -94,9 +91,7 @@ public class LikeablePersonController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/toList")
-    @ResponseBody
     public String showToList(Model model) {
-        //TODO : showToList 구현해야 함
-        return "usr/likeablePerson/toList 구현해야 함";
+        return "usr/likeablePerson/toList";
     }
 }
