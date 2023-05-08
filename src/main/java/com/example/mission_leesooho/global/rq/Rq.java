@@ -9,6 +9,7 @@ import com.example.mission_leesooho.standard.util.Ut;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,26 +17,34 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
+import org.springframework.web.servlet.LocaleResolver;
 
 import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
 
 @Component
 @RequestScope
 public class Rq {
     private final MemberService memberService;
+    private final NotificationService notificationService;
+    private final MessageSource messageSource;
+    private final LocaleResolver localeResolver;
+    private Locale locale;
     private final HttpServletRequest req;
     private final HttpServletResponse resp;
     private final HttpSession session;
     private final User user;
     private Member member = null; // 레이지 로딩, 처음부터 넣지 않고, 요청이 들어올 때 넣는다.
-    private final NotificationService notificationService;
 
-    public Rq(MemberService memberService, HttpServletRequest req, HttpServletResponse resp, HttpSession session, NotificationService notificationService) {
+    public Rq(MemberService memberService, NotificationService notificationService, MessageSource messageSource, LocaleResolver localeResolver, HttpServletRequest req, HttpServletResponse resp, HttpSession session) {
         this.memberService = memberService;
+        this.notificationService = notificationService;
+        this.messageSource = messageSource;
+        this.localeResolver = localeResolver;
         this.req = req;
         this.resp = resp;
         this.session = session;
-        this.notificationService = notificationService;
 
         // 현재 로그인한 회원의 인증정보를 가져옴
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -133,12 +142,28 @@ public class Rq {
         return defaultValue;
     }
 
+    public void removeSessionAttr(String name) {
+        session.removeAttribute(name);
+    }
+
     public boolean hasNotification() {
         Page<Notification> myNotification = notificationService.findMyNotification(getMember().getInstaMember(), 0);
         return !myNotification.isEmpty();
     }
 
-    public void removeSessionAttr(String name) {
-        session.removeAttribute(name);
+    public String getCText(String code, String... args) {
+        return messageSource.getMessage(code, args, getLocale());
+    }
+
+    private Locale getLocale() {
+        if (locale == null) locale = localeResolver.resolveLocale(req);
+
+        return locale;
+    }
+
+    public String getParamsJsonStr() {
+        Map<String, String[]> parameterMap = req.getParameterMap();
+
+        return Ut.json.toStr(parameterMap);
     }
 }
