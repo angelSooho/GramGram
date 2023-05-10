@@ -1,5 +1,6 @@
 package com.example.mission_leesooho.boundedContext.likeablePerson.controller;
 
+import com.example.mission_leesooho.boundedContext.instaMember.entity.InstaMember;
 import com.example.mission_leesooho.boundedContext.likeablePerson.dto.form.AddForm;
 import com.example.mission_leesooho.boundedContext.likeablePerson.dto.form.ModifyForm;
 import com.example.mission_leesooho.boundedContext.likeablePerson.dto.response.LikeablePersonResponse;
@@ -13,6 +14,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/usr/likeablePerson")
@@ -32,7 +35,7 @@ public class LikeablePersonController {
     @PostMapping("/like")
     public String like(@Valid AddForm addForm) {
 
-        RsData<LikeablePersonResponse> rsData = likeablePersonService.like(rq.getMember(), addForm.username(), addForm.attractiveTypeCode());
+        RsData<LikeablePersonResponse> rsData = likeablePersonService.like(rq.getMember(), addForm.username(), addForm.attractiveTypeCode(), addForm.genderCode());
 
         if (rsData.isFail()) {
             return rq.historyBack(rsData);
@@ -83,15 +86,30 @@ public class LikeablePersonController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/list")
     public String showList(Model model) {
-
         model.addAttribute("likeablePeople", likeablePersonService.show(rq.getMember()));
-
         return "usr/likeablePerson/list";
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/toList")
-    public String showToList(Model model) {
-        return "usr/likeablePerson/toList";
+    public String showToList(Model model, @RequestParam(required = false, defaultValue = "U") String gender,
+                             @RequestParam(required = false, defaultValue = "0") String attractiveTypeCode,
+                             @RequestParam(required = false, defaultValue = "1") String sortCode) {
+
+        InstaMember instaMember = rq.getMember().getInstaMember();
+
+        if (instaMember != null) {
+            List<LikeablePerson> likeablePeople = instaMember.getPullLikeablePeople();
+
+            if (!likeablePeople.isEmpty()) {
+                likeablePersonService.orderBy(likeablePeople, gender, attractiveTypeCode, sortCode);
+            }
+
+            model.addAttribute("likeablePeople", likeablePeople);
+            model.addAttribute("gender", gender);
+            model.addAttribute("sortCode", sortCode);
+            model.addAttribute("attractiveTypeCode", attractiveTypeCode);
+        }
+        return "/usr/likeablePerson/toList";
     }
 }
