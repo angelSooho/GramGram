@@ -58,6 +58,13 @@
                         </a>
                     </li>
 
+                    <li th:if="${@rq.login}">
+                        <a href="/usr/likeablePerson/toList">
+                            <th:block th:utext="#{c.iconListOfLikes}"></th:block>
+                            <span th:text="#{c.pageNamePullListOfLikes}"></span>
+                        </a>
+                    </li>
+
                     <li th:if="${@rq.login}" th:unless="${@rq.member.hasConnectedInstaMember}">
                         <a href="/usr/instaMember/connectByApi">
                             <th:block th:utext="#{c.iconLinkingInstagram}"></th:block>

@@ -4,6 +4,7 @@ import com.example.mission_leesooho.boundedContext.instaMember.entity.InstaMembe
 import com.example.mission_leesooho.boundedContext.instaMember.repository.InstaMemberRepository;
 import com.example.mission_leesooho.boundedContext.instaMember.service.InstaMemberService;
 import com.example.mission_leesooho.boundedContext.likeablePerson.dto.request.LikeablePersonSearchCond;
+import com.example.mission_leesooho.boundedContext.likeablePerson.dto.request.order.*;
 import com.example.mission_leesooho.boundedContext.likeablePerson.dto.response.LikeablePersonResponse;
 import com.example.mission_leesooho.boundedContext.likeablePerson.entity.LikeablePerson;
 import com.example.mission_leesooho.boundedContext.likeablePerson.repository.LikeablePersonRepository;
@@ -42,7 +43,7 @@ public class LikeablePersonService {
     @Value("${likeable-person.time-limit}")
     private long time_limit;
 
-    public RsData<LikeablePersonResponse> like(Member member, String username, int attractiveTypeCode) {
+    public RsData<LikeablePersonResponse> like(Member member, String username, int attractiveTypeCode, String gender) {
 
         if (!member.hasConnectedInstaMember()) {
             return RsData.of("F-2", "먼저 본인의 인스타그램 아이디를 입력해야 합니다.");
@@ -57,7 +58,7 @@ public class LikeablePersonService {
             return RsData.of("F-3",  lst_max + "명이상의 호감표시를 할 수 없습니다.");
         }
 
-        InstaMember pullInstaMember = instaMemberService.findByUsernameOrCreate(username).getData();
+        InstaMember pullInstaMember = instaMemberService.findByUsernameOrCreate(username, gender).getData();
 
         LikeablePerson likeablePerson = LikeablePerson
                 .builder()
@@ -181,6 +182,24 @@ public class LikeablePersonService {
             return instaMember.getPushLikeablePeople();
         }
         throw new RuntimeException();
+    }
+
+    public void orderBy(List<LikeablePerson> likeablePeople, String gender, String ATC, String sortType) {
+
+        if(!gender.equals("U")) {
+            likeablePeople = likeablePeople.stream().filter(likeablePerson -> likeablePerson.getPushInstaMember().getGender().equals(gender)).toList();
+        } else if(!Objects.equals(ATC, "0")) {
+            likeablePeople = likeablePeople.stream().filter(likeablePerson -> likeablePerson.getAttractiveTypeCode() == Integer.parseInt(ATC)).toList();
+        }
+
+        switch (sortType) {
+            case "1" -> likeablePeople.sort(new LatestOrder());
+            case "2" -> likeablePeople.sort(new OldOrder());
+            case "3" -> likeablePeople.sort(new PopularOrder());
+            case "4" -> likeablePeople.sort(new UnpopularOrder());
+            case "5" -> likeablePeople.sort(new GenderOrder());
+            case "6" -> likeablePeople.sort(new ATCOrder());
+        }
     }
 
     public RsData<LikeablePerson> ModifyLike(Long id, Member member) {
