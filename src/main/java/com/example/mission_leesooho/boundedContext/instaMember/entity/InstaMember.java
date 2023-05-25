@@ -86,6 +86,7 @@ public class InstaMember extends InstaMemberBase {
     }
 
     public void increaseLikesCount(String gender, int attractiveTypeCode) {
+        likeCount++;
         if (gender.equals("W") && attractiveTypeCode == 1) likesCountByGenderWomanAndAttractiveTypeCode1++;
         if (gender.equals("W") && attractiveTypeCode == 2) likesCountByGenderWomanAndAttractiveTypeCode2++;
         if (gender.equals("W") && attractiveTypeCode == 3) likesCountByGenderWomanAndAttractiveTypeCode3++;
@@ -95,6 +96,7 @@ public class InstaMember extends InstaMemberBase {
     }
 
     public void decreaseLikesCount(String gender, int attractiveTypeCode) {
+        likeCount--;
         if (gender.equals("W") && attractiveTypeCode == 1) likesCountByGenderWomanAndAttractiveTypeCode1--;
         if (gender.equals("W") && attractiveTypeCode == 2) likesCountByGenderWomanAndAttractiveTypeCode2--;
         if (gender.equals("W") && attractiveTypeCode == 3) likesCountByGenderWomanAndAttractiveTypeCode3--;

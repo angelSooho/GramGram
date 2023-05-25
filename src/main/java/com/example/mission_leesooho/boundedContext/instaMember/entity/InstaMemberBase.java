@@ -13,6 +13,8 @@ import lombok.experimental.SuperBuilder;
 public abstract class InstaMemberBase extends BaseTimeEntity {
     String gender;
 
+    Long likeCount;
+
     long likesCountByGenderWomanAndAttractiveTypeCode1;
     long likesCountByGenderWomanAndAttractiveTypeCode2;
     long likesCountByGenderWomanAndAttractiveTypeCode3;
