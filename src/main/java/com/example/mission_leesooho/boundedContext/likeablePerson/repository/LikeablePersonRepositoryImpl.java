@@ -3,7 +3,6 @@ package com.example.mission_leesooho.boundedContext.likeablePerson.repository;
 import com.example.mission_leesooho.boundedContext.likeablePerson.dto.request.LikeablePersonOptionCond;
 import com.example.mission_leesooho.boundedContext.likeablePerson.dto.request.LikeablePersonSearchCond;
 import com.example.mission_leesooho.boundedContext.likeablePerson.entity.LikeablePerson;
-import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -53,16 +52,14 @@ public class LikeablePersonRepositoryImpl implements LikeablePersonRepositoryCus
 
     private OrderSpecifier<?> sort(LikeablePersonOptionCond cond) {
 
-        if (cond.sortType() == 1) {
-            return new OrderSpecifier<>(Order.DESC, likeablePerson.createDate);
-        } else if (cond.sortType() == 2) {
-            return new OrderSpecifier<>(Order.ASC, likeablePerson.createDate);
-        } else if (cond.sortType() == 3) {
-            return new OrderSpecifier<>(Order.DESC, likeablePerson.pullInstaMember.pullLikeablePeople.size());
-        } else if (cond.sortType() == 4) {
-            return new OrderSpecifier<>(Order.ASC, likeablePerson.pullInstaMember.pullLikeablePeople.size());
-        }
-        return null;
+        return switch (cond.sortType()) {
+            case 2 -> likeablePerson.id.asc();
+            case 3 -> likeablePerson.pushInstaMember.likeCount.desc();
+            case 4 -> likeablePerson.pushInstaMember.likeCount.asc();
+            case 5 -> likeablePerson.pushInstaMember.gender.desc();
+            case 6 -> likeablePerson.attractiveTypeCode.asc();
+            default -> likeablePerson.id.desc();
+        };
     }
 
     private static BooleanExpression attractiveTypeCodeEq(LikeablePersonOptionCond cond) {
